@@ -12,12 +12,39 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone')->nullable();
+            $table->enum('role', ['superadmin', 'admin', 'customer'])->default('customer');
             $table->rememberToken();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('user_addresses', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            $table->string('label');
+            $table->string('receiver_name');
+            $table->string('phone');
+            $table->text('street_address'); // Nama jalan, nomor rumah, gedung, blok, RT/RW
+            $table->string('village')->nullable();       // Kelurahan / Desa
+            $table->string('subdistrict');    // Kecamatan
+            $table->string('city');           // Kota / Kabupaten
+            $table->string('province');       // Provinsi
+            $table->string('postal_code', 10);
+
+            // --- ID untuk Integrasi API Kurir (e.g., RajaOngkir) ---
+            // Tipe data string untuk fleksibilitas (beberapa API menggunakan angka, yg lain bisa kombinasi)
+            $table->string('province_id')->nullable();
+            $table->string('city_id')->nullable();
+            $table->string('subdistrict_id')->nullable();
+
+            $table->boolean('is_primary')->default(false);
+
             $table->timestamps();
         });
 
@@ -43,6 +70,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('user_addresses');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
