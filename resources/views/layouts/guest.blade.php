@@ -45,6 +45,23 @@
             </div>
         </div>
     </div>
+
+    @if (session('auth_success'))
+        <script>
+            window.addEventListener("DOMContentLoaded", () => {
+                window.notyf.success(@json(session('auth_success')));
+            });
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <script>
+            window.addEventListener("DOMContentLoaded", () => {
+                window.notyf.error(@json($errors->first()));
+            });
+        </script>
+    @endif
+
 </body>
 
 </html>

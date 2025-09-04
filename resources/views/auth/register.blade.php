@@ -78,7 +78,9 @@
 
         <div class="pt-2">
             <button type="submit"
-                class="w-full bg-primary text-white font-display font-semibold py-2.5 px-4 rounded-md hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition cursor-pointer">
+                class="w-full bg-persada-primary text-white font-display font-semibold py-2.5 px-4 rounded-md 
+               hover:bg-persada-dark-hover focus:outline-none focus:ring-2 focus:ring-persada-accent 
+               focus:ring-offset-2 transition cursor-pointer">
                 Buat Akun
             </button>
         </div>
