@@ -13,6 +13,29 @@ window.notyf = new Notyf({
     position: { x: "right", y: "top" },
 });
 
+window.confirmDelete = function (form) {
+    Swal.fire({
+        title: "Yakin hapus data ini?",
+        text: "Data yang dihapus tidak bisa dikembalikan!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Ya, hapus!",
+        cancelButtonText: "Batal",
+        background: document.documentElement.classList.contains("dark")
+            ? "#1f2937"
+            : "#fff",
+        color: document.documentElement.classList.contains("dark")
+            ? "#e5e7eb"
+            : "#111827",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
     const htmlElement = document.documentElement;
