@@ -8,14 +8,28 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('images/company-logo.ico') }}">
     <title>@yield('title', 'Dashboard') - Persada Packaging</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
+                '(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
 
-<body class="font-sans antialiased bg-gray-100 text-gray-900">
-
+<body class="font-sans antialiased bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-200">
     <div x-data="{
         sidebarOpen: false,
-        dataMasterOpen: {{ request()->is('master*') ? 'true' : 'false' }},
-        laporanOpen: {{ request()->is('laporan*') ? 'true' : 'false' }}
+        profileDropdownOpen: false,
+        manajemenTokoOpen: {{ request()->is('dashboard/penjualan*') ? 'true' : 'false' }},
+        dataMasterOpen: {{ request()->is('dashboard/master*') ? 'true' : 'false' }},
+        laporanOpen: {{ request()->is('dashboard/laporan*') ? 'true' : 'false' }}
     }" class="flex h-screen overflow-hidden">
 
         @include('layouts.partials.sidebar')
@@ -31,6 +45,22 @@
             </main>
         </div>
     </div>
+
+    @if (session('success') || session('error'))
+        <script>
+            window.addEventListener("DOMContentLoaded", () => {
+                Swal.fire({
+                    icon: '{{ session('success') ? 'success' : 'error' }}',
+                    title: '{{ session('success') ? 'Sukses' : 'Error' }}',
+                    text: '{{ session('success') ?? session('error') }}',
+                    timer: 2500,
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
+                    color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#111827',
+                    showConfirmButton: false,
+                });
+            });
+        </script>
+    @endif
 
     @stack('scripts')
 </body>
