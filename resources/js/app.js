@@ -2,6 +2,7 @@ import "./bootstrap";
 import { Notyf } from "notyf";
 import Alpine from "alpinejs";
 import Swal from "sweetalert2";
+import "trix";
 
 window.Alpine = Alpine;
 Alpine.start();

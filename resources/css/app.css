@@ -25,8 +25,10 @@
 
 @import "notyf/notyf.min.css";
 @import "tailwindcss";
+@import "trix/dist/trix.css";
 
 @plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

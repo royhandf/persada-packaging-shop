@@ -33,9 +33,9 @@ return new class extends Migration
             $table->integer('moq')->default(1);
 
             $table->unsignedInteger('weight_in_grams')->default(0);
-            $table->unsignedInteger('length_in_cm')->default(0);
-            $table->unsignedInteger('width_in_cm')->default(0);
-            $table->unsignedInteger('height_in_cm')->default(0);
+            $table->unsignedInteger('length_in_cm')->nullable(); 
+            $table->unsignedInteger('width_in_cm')->nullable();  
+            $table->unsignedInteger('height_in_cm')->nullable(); 
 
             $table->timestamps();
         });
