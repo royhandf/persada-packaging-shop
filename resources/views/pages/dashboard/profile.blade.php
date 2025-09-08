@@ -57,7 +57,7 @@
                     <div class="flex items-center justify-end">
                         <button type="submit"
                             class="cursor-pointer rounded-md bg-persada-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-persada-dark-hover focus-visible:outline-offset-2 focus-visible:outline-persada-primary">
-                            Simpan Perubahan
+                            Simpan
                         </button>
                     </div>
                 </form>
