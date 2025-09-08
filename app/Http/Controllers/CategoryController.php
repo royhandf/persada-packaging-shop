@@ -30,44 +30,36 @@ class CategoryController extends Controller
 
         Category::create($validated);
 
-        return redirect()->route('master.kategori.index')->with('success', 'Kategori baru berhasil ditambahkan.'); // <-- Diubah
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Category $kategori)
-    {
-        return response()->json($kategori);
+        return redirect()->route('master.categories.index')->with('success', 'Kategori baru berhasil ditambahkan.'); // <-- Diubah
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $kategori)
+    public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories', 'name')->ignore($kategori->id),
+                Rule::unique('categories', 'name')->ignore($category->id),
             ],
         ]);
 
         $validated['name'] = trim($validated['name']);
 
-        $kategori->update($validated);
+        $category->update($validated);
 
-        return redirect()->route('master.kategori.index')->with('success', 'Kategori berhasil diperbarui.');
+        return redirect()->route('master.categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $kategori)
+    public function destroy(Category $category)
     {
-        $kategori->delete();
-        return redirect()->route('master.kategori.index')->with('success', 'Kategori berhasil dihapus.');
+        $category->delete();
+        return redirect()->route('master.categories.index')->with('success', 'Kategori berhasil dihapus.');
     }
 }

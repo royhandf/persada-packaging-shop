@@ -34,11 +34,6 @@ class AdminManagementController extends Controller
         return redirect()->route('admin.index')->with('success', 'Admin baru berhasil ditambahkan.');
     }
 
-    public function show(User $user)
-    {
-        return response()->json($user);
-    }
-
     public function update(Request $request, User $admin)
     {
         $validated = $request->validate([

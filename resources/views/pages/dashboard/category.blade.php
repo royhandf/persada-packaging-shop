@@ -46,7 +46,7 @@
                                         class="p-1.5 rounded bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
                                         <x-heroicon-o-pencil class="w-4 h-4" />
                                     </button>
-                                    <form action="{{ route('master.kategori.destroy', $category->id) }}" method="POST">
+                                    <form action="{{ route('master.categories.destroy', $category->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" onclick="confirmDelete(this.closest('form'))"
@@ -122,7 +122,7 @@
                         this.isAddMode = true;
                         this.modalTitle = 'Tambah Kategori Baru';
                         this.submitText = 'Simpan';
-                        this.formAction = '{{ route('master.kategori.store') }}';
+                        this.formAction = '{{ route('master.categories.store') }}';
                         this.formData = {
                             id: null,
                             name: ''
@@ -132,7 +132,7 @@
                         this.modalTitle = 'Edit Kategori';
                         this.submitText = 'Simpan';
 
-                        let updateUrl = '{{ route('master.kategori.update', ['kategori' => ':id']) }}';
+                        let updateUrl = '{{ route('master.categories.update', ['category' => ':id']) }}';
                         this.formAction = updateUrl.replace(':id', category.id);
 
                         this.formData = {
