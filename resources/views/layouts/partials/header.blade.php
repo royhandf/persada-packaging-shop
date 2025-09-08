@@ -1,5 +1,4 @@
-<header
-    class="sticky top-0 z-20 border-b border-gray-200 bg-white/70 backdrop-blur-lg dark:border-gray-700 dark:bg-gray-800/70">
+<header class="sticky top-0 z-20 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
     <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
             <div class="flex items-center gap-3">
