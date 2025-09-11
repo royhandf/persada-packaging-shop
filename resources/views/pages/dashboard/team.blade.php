@@ -1,15 +1,15 @@
     @extends('layouts.admin')
 
-    @section('title', 'Manajemen Admin')
+    @section('title', 'Manajemen Team')
 
     @section('content')
-        <div x-data="adminCrud()">
+        <div x-data="teamCrud()">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-semibold">Manajemen Admin</h1>
+                <h1 class="text-2xl font-semibold">Manajemen Team</h1>
                 <button @click="openModal('add')"
                     class="inline-flex items-center justify-center rounded-md bg-persada-primary p-2 text-sm font-semibold text-white hover:bg-persada-dark-hover sm:px-4">
                     <x-heroicon-o-plus class="h-5 w-5" />
-                    <span class="hidden sm:ml-2 sm:inline">Tambah Admin</span>
+                    <span class="hidden sm:ml-2 sm:inline">Tambah Team</span>
                 </button>
             </div>
 
@@ -36,24 +36,24 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                        @forelse ($admins as $admin)
+                        @forelse ($teams as $team)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
-                                    {{ ($admins->currentPage() - 1) * $admins->perPage() + $loop->iteration }}
+                                    {{ ($teams->currentPage() - 1) * $teams->perPage() + $loop->iteration }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
-                                    {{ $admin->name }}
+                                    {{ $team->name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $admin->email }}
+                                    {{ $team->email }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                                     <div class="flex items-center gap-x-2">
-                                        <button @click="openModal('edit', @js($admin))"
+                                        <button @click="openModal('edit', @js($team))"
                                             class="p-1.5 rounded bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
                                             <x-heroicon-o-pencil class="w-4 h-4" />
                                         </button>
-                                        <form action="{{ route('admin.destroy', $admin->id) }}" method="POST">
+                                        <form action="{{ route('teams.destroy', $team->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" onclick="confirmDelete(this.closest('form'))"
@@ -68,7 +68,7 @@
                         @empty
                             <tr>
                                 <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Belum ada data admin.
+                                    Belum ada data tim.
                                 </td>
                             </tr>
                         @endforelse
@@ -77,7 +77,7 @@
             </div>
 
             <div class="mt-4">
-                {{ $admins->links() }}
+                {{ $teams->links() }}
             </div>
 
             <div x-show="isOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -114,7 +114,9 @@
 
                         <div class="flex justify-end gap-2 pt-4">
                             <button type="button" @click="closeModal()"
-                                class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">Batal</button>
+                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+                                Batal
+                            </button>
                             <button type="submit"
                                 class="px-4 py-2 bg-persada-primary text-white rounded hover:bg-persada-dark-hover"
                                 x-text="submitText"></button>
@@ -127,7 +129,7 @@
 
     @push('scripts')
         <script>
-            function adminCrud() {
+            function teamCrud() {
                 return {
                     isOpen: false,
                     isAddMode: true,
@@ -140,14 +142,14 @@
                         email: ''
                     },
 
-                    openModal(mode, admin = null) {
+                    openModal(mode, team = null) {
                         this.isOpen = true;
 
                         if (mode === 'add') {
                             this.isAddMode = true;
-                            this.modalTitle = 'Tambah Admin Baru';
+                            this.modalTitle = 'Tambah Tim Baru';
                             this.submitText = 'Simpan';
-                            this.formAction = '{{ route('admin.store') }}';
+                            this.formAction = '{{ route('teams.store') }}';
                             this.formData = {
                                 id: null,
                                 name: '',
@@ -155,16 +157,16 @@
                             };
                         } else {
                             this.isAddMode = false;
-                            this.modalTitle = 'Edit Admin';
+                            this.modalTitle = 'Edit Tim';
                             this.submitText = 'Simpan';
 
-                            let updateUrl = '{{ route('admin.update', ['admin' => ':id']) }}';
-                            this.formAction = updateUrl.replace(':id', admin.id);
+                            let updateUrl = '{{ route('teams.update', ['team' => ':id']) }}';
+                            this.formAction = updateUrl.replace(':id', team.id);
 
                             this.formData = {
-                                id: admin.id,
-                                name: admin.name,
-                                email: admin.email
+                                id: team.id,
+                                name: team.name,
+                                email: team.email
                             };
                         }
                     },

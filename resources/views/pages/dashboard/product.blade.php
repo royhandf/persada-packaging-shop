@@ -138,7 +138,8 @@
                 </div>
 
                 <div class="flex justify-end gap-2 pt-4 mt-4">
-                    <button type="button" @click="closeModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                    <button type="button" @click="closeModal()"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
                         Batal
                     </button>
                     <button type="button" @click="submitForm()"
