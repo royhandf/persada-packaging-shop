@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -70,6 +71,10 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->image_path);
+        }
+
         $product->delete();
         return redirect()->route('master.products.index')->with('success', 'Produk berhasil dihapus.');
     }
