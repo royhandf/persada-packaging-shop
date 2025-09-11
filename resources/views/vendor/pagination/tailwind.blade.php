@@ -2,14 +2,12 @@
     <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex items-center justify-between">
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
                     Showing
-                    <span class="font-medium">{{ $paginator->firstItem() }}</span>
-                    to
-                    <span class="font-medium">{{ $paginator->lastItem() }}</span>
-                    of
-                    <span class="font-medium">{{ $paginator->total() }}</span>
-                    results
+                    <span
+                        class="font-medium text-gray-900 dark:text-white">{{ $paginator->firstItem() }}-{{ $paginator->lastItem() }}</span>
+                    dari
+                    <span class="font-medium text-gray-900 dark:text-white">{{ $paginator->total() }}</span>
                 </p>
             </div>
 
@@ -18,12 +16,12 @@
                     {{-- Previous --}}
                     @if ($paginator->onFirstPage())
                         <span
-                            class="w-9 h-9 flex items-center justify-center text-gray-400 bg-gray-200 rounded-md cursor-not-allowed">
+                            class="w-9 h-9 flex items-center justify-center text-gray-400 bg-gray-200 rounded-md cursor-not-allowed dark:bg-gray-800 dark:text-gray-500">
                             <x-heroicon-s-chevron-left class="w-4 h-4" />
                         </span>
                     @else
                         <a href="{{ $paginator->previousPageUrl() }}"
-                            class="w-9 h-9 flex items-center justify-center text-gray-600 bg-white rounded-md hover:bg-gray-100 shadow-sm">
+                            class="w-9 h-9 flex items-center justify-center text-gray-600 bg-white rounded-md hover:bg-gray-100 shadow-sm dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                             <x-heroicon-s-chevron-left class="w-4 h-4" />
                         </a>
                     @endif
@@ -39,7 +37,7 @@
                                     </span>
                                 @else
                                     <a href="{{ $url }}"
-                                        class="w-9 h-9 flex items-center justify-center text-sm text-gray-600 bg-white rounded-md hover:bg-gray-100 shadow-sm">
+                                        class="w-9 h-9 flex items-center justify-center text-sm text-gray-600 bg-white rounded-md hover:bg-gray-100 shadow-sm dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                         {{ $page }}
                                     </a>
                                 @endif
@@ -50,12 +48,12 @@
                     {{-- Next --}}
                     @if ($paginator->hasMorePages())
                         <a href="{{ $paginator->nextPageUrl() }}"
-                            class="w-9 h-9 flex items-center justify-center text-gray-600 bg-white rounded-md hover:bg-gray-200 shadow-sm">
+                            class="w-9 h-9 flex items-center justify-center text-gray-600 bg-white rounded-md hover:bg-gray-100 shadow-sm dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                             <x-heroicon-s-chevron-right class="w-4 h-4" />
                         </a>
                     @else
                         <span
-                            class="w-9 h-9 flex items-center justify-center text-gray-400 bg-gray-200 rounded-md cursor-not-allowed">
+                            class="w-9 h-9 flex items-center justify-center text-gray-400 bg-gray-200 rounded-md cursor-not-allowed dark:bg-gray-800 dark:text-gray-500">
                             <x-heroicon-s-chevron-right class="w-4 h-4" />
                         </span>
                     @endif
