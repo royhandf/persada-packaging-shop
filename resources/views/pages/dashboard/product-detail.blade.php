@@ -241,11 +241,6 @@
                                     </td>
                                     <td class="px-6 py-4 text-sm font-medium">
                                         <div class="flex items-center gap-x-2">
-                                            <button title="Edit Varian"
-                                                class="p-1.5 rounded bg-amber-500 text-white hover:bg-amber-600">
-                                                <x-heroicon-o-pencil class="w-4 h-4" />
-                                            </button>
-
                                             <form
                                                 action="{{ route('master.products.variants.destroy', [$product, $variant]) }}"
                                                 method="POST">
