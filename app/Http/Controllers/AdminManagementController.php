@@ -12,8 +12,8 @@ class AdminManagementController extends Controller
 {
     public function index()
     {
-        $admins = User::where('role', 'admin')->latest()->paginate(10);
-        return view('pages.dashboard.admin', compact('admins'));
+        $teams = User::where('role', 'admin')->latest()->paginate(10);
+        return view('pages.dashboard.team', compact('teams'));
     }
 
     public function store(Request $request)
@@ -31,14 +31,14 @@ class AdminManagementController extends Controller
             'role' => 'admin',
         ]);
 
-        return redirect()->route('admin.index')->with('success', 'Admin baru berhasil ditambahkan.');
+        return redirect()->route('teams.index')->with('success', 'Admin baru berhasil ditambahkan.');
     }
 
-    public function update(Request $request, User $admin)
+    public function update(Request $request, User $team)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($admin->id)],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($team->id)],
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
@@ -51,14 +51,14 @@ class AdminManagementController extends Controller
             $updateData['password'] = Hash::make($validated['password']);
         }
 
-        $admin->update($updateData);
+        $team->update($updateData);
 
-        return redirect()->route('admin.index')->with('success', 'Admin berhasil diperbarui.');
+        return redirect()->route('teams.index')->with('success', 'Admin berhasil diperbarui.');
     }
 
-    public function destroy(User $admin)
+    public function destroy(User $team)
     {
-        $admin->delete();
-        return redirect()->route('admin.index')->with('success', 'Admin berhasil dihapus.');
+        $team->delete();
+        return redirect()->route('teams.index')->with('success', 'Admin berhasil dihapus.');
     }
 }
