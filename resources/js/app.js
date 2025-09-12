@@ -2,7 +2,10 @@ import "./bootstrap";
 import { Notyf } from "notyf";
 import Alpine from "alpinejs";
 import Swal from "sweetalert2";
+import intersect from "@alpinejs/intersect";
 import "trix";
+
+Alpine.plugin(intersect);
 
 window.Alpine = Alpine;
 Alpine.start();

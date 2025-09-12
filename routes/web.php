@@ -4,15 +4,18 @@ use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('pages.home.index');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/about', function () {
+    return view('pages.home.about');
+})->name('about');
 
 Route::get('/login', [AuthController::class, 'loginIndex'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -21,6 +24,10 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('provinces', [SettingController::class, 'provinces'])->name('api.provinces');
+    Route::get('cities/{provinceId}', [SettingController::class, 'cities'])->name('api.cities');
+    Route::get('districts/{cityId}', [SettingController::class, 'districts'])->name('api.districts');
 
     Route::prefix('dashboard')->group(function () {
 
@@ -70,7 +77,9 @@ Route::middleware(['auth'])->group(function () {
                 })->name('pelanggan.index');
             });
 
-            Route::resource('admin', AdminManagementController::class)->except(['create', 'edit', 'show']);
+            Route::resource('teams', AdminManagementController::class)->except(['create', 'edit', 'show']);
+            Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+            Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
         });
     });
 });

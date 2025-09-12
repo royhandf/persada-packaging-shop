@@ -17,6 +17,7 @@
         "vite": "^7.0.4"
     },
     "dependencies": {
+        "@alpinejs/intersect": "^3.15.0",
         "alpinejs": "^3.14.9",
         "notyf": "^3.10.0",
         "sweetalert2": "^11.22.5",
