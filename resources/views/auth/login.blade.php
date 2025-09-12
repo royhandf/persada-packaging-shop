@@ -40,7 +40,7 @@
         <div class="flex items-center justify-between text-sm">
             <div class="flex items-center">
                 <input id="remember" name="remember" type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary">
+                    class="h-4 w-4 rounded border-gray-300 text-persada-primary focus:ring-persada-primary">
                 <label for="remember" class="ml-2 block text-gray-600">Ingat saya</label>
             </div>
             <a href="{{ route('register') }}" class="font-medium text-green-600 hover:underline">Buat akun baru</a>
