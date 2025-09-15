@@ -5,7 +5,7 @@
     <a href="{{ route('products.detail', $product) }}">
         <div class="aspect-square overflow-hidden">
             <img src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : 'https://via.placeholder.com/400' }}"
-                alt="{{ $product->name }}"
+                alt="{{ $product->name }}" loading="lazy" decoding="async"
                 class="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105">
         </div>
         <div class="p-4">

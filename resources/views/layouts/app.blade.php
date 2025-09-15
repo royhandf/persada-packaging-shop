@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/company-logo.ico') }}">
+    @if (request()->routeIs('home'))
+        <link rel="preload" as="image" href="{{ asset('images/hero-background.jpg') }}">
+    @elseif(request()->routeIs('about'))
+        <link rel="preload" as="image" href="{{ asset('images/skincare-shades.jpg') }}">
+    @endif
     <title>@yield('title', 'Persada Packaging')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
