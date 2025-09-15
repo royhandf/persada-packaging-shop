@@ -21,9 +21,6 @@
                     placeholder="user@mail.com"
                     class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-green-500 focus:border-green-500 transition placeholder:text-gray-400">
             </div>
-            @error('email')
-                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-            @enderror
         </div>
 
         <div>
