@@ -3,6 +3,7 @@ import { Notyf } from "notyf";
 import Alpine from "alpinejs";
 import Swal from "sweetalert2";
 import intersect from "@alpinejs/intersect";
+import rangeSlider from "range-slider-input";
 import "trix";
 
 Alpine.plugin(intersect);
@@ -11,7 +12,7 @@ window.Alpine = Alpine;
 Alpine.start();
 
 window.Swal = Swal;
-
+window.rangeSlider = rangeSlider;
 window.notyf = new Notyf({
     duration: 2500,
     position: { x: "right", y: "top" },

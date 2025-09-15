@@ -4,7 +4,7 @@ use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AppController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ProductVariantController;
@@ -12,10 +12,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', function () {
-    return view('pages.home.about');
-})->name('about');
+Route::get('/', [AppController::class, 'index'])->name('home');
+Route::get('/about', [AppController::class, 'about'])->name('about');
 
 Route::get('/login', [AuthController::class, 'loginIndex'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -28,6 +26,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('provinces', [SettingController::class, 'provinces'])->name('api.provinces');
     Route::get('cities/{provinceId}', [SettingController::class, 'cities'])->name('api.cities');
     Route::get('districts/{cityId}', [SettingController::class, 'districts'])->name('api.districts');
+
+    Route::middleware('role:customer')->group(function () {
+        Route::get('/products', [AppController::class, 'products'])->name('products.index');
+        Route::get('/products/{product}', [AppController::class, 'productDetail'])->name('products.detail');
+    });
 
     Route::prefix('dashboard')->group(function () {
 

@@ -23,9 +23,7 @@
     src: url("../fonts/poppins-v23-latin-700.woff2") format("woff2");
 }
 
-@import "notyf/notyf.min.css";
 @import "tailwindcss";
-@import "trix/dist/trix.css";
 
 @plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
@@ -34,6 +32,10 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+
+@import "notyf/notyf.min.css";
+@import "trix/dist/trix.css";
+@import "range-slider-input/dist/style.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -59,5 +61,36 @@
     .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
+    }
+}
+
+@layer components {
+    #price-slider-desktop .range-slider__track,
+    #price-slider-mobile .range-slider__track {
+        background: #e5e7eb !important;
+        height: 4px;
+        border-radius: 9999px;
+    }
+
+    #price-slider-desktop .range-slider__range,
+    #price-slider-mobile .range-slider__range {
+        background: var(--color-persada-primary) !important;
+        height: 4px;
+        border-radius: 9999px;
+    }
+
+    #price-slider-desktop .range-slider__thumb,
+    #price-slider-mobile .range-slider__thumb {
+        background: var(--color-persada-primary) !important;
+        width: 5px;
+        height: 5px;
+        border: none;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2);
+        transition: transform 0.2s;
+    }
+
+    #price-slider-desktop .range-slider__thumb[data-active],
+    #price-slider-mobile .range-slider__thumb[data-active] {
+        transform: translate(-50%, -50%) scale(1.2);
     }
 }

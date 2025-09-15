@@ -27,4 +27,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    public function lowestPriceVariant()
+    {
+        return $this->hasOne(ProductVariant::class)->orderBy('price', 'asc');
+    }
 }
