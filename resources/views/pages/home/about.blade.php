@@ -15,11 +15,6 @@
                 x-transition:enter-end="opacity-100 translate-y-0">
                 Tentang Persada Packaging
             </h1>
-            <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto" x-show="show"
-                x-transition:enter="transition ease-out duration-1000 delay-300"
-                x-transition:enter-start="opacity-0 translate-y-8" x-transition:enter-end="opacity-100 translate-y-0">
-                Lebih dari sekadar kemasan, kami adalah partner pertumbuhan merek Anda.
-            </p>
         </div>
     </section>
 
@@ -114,10 +109,11 @@
                 Hubungi kami hari ini untuk konsultasi dan temukan bagaimana kemasan yang tepat dapat memajukan merek Anda
                 ke level berikutnya.
             </p>
-            <a href=""
+            <a href="whatsapp://send?phone=6281283635368&text=Halo%2C%20Saya%20tertarik%20dengan%20produk%20Anda."
+                target="_blank"
                 class="mt-8 w-full inline-flex items-center justify-center
-           px-5 py-3 border border-transparent text-base font-medium rounded-full text-white bg-persada-primary
-           hover:bg-persada-primary/90 sm:w-auto transition-colors">
+   px-5 py-3 border border-transparent text-base font-medium rounded-full text-white bg-persada-primary
+   hover:bg-persada-primary/90 sm:w-auto transition-colors">
                 Hubungi Kami
             </a>
         </div>
