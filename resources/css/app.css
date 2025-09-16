@@ -50,6 +50,18 @@
     --color-persada-primary: #40916c;
 }
 
+@layer base {
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+}
+
 @layer utilities {
     .font-sm {
         font-size: 0.875rem;

@@ -10,7 +10,14 @@ class CartItem extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['user_id', 'product_variant_id', 'quantity'];
+    protected $fillable = ['user_id', 'product_variant_id', 'quantity', 'selected'];
+
+    protected function casts(): array
+    {
+        return [
+            'selected' => 'boolean',
+        ];
+    }
 
     public function user()
     {
@@ -20,5 +27,13 @@ class CartItem extends Model
     public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? $this->getRouteKeyName(), $value)
+            ->where('user_id', auth()->id())
+            ->with('productVariant')
+            ->firstOrFail();
     }
 }

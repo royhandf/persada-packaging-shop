@@ -69,7 +69,7 @@
 
             <div class="hidden md:flex items-center space-x-6">
                 @auth
-                    <a href="#" title="Keranjang Belanja"
+                    <a href="{{ route('cart.index') }}" title="Keranjang Belanja"
                         :class="{ 'hover:text-persada-primary': navIsScrolled, 'hover:text-gray-200': !navIsScrolled }">
                         <x-heroicon-o-shopping-bag class="h-6 w-6" />
                     </a>
@@ -123,7 +123,7 @@
                     class="text-xl font-medium {{ $isAboutActive ? 'text-persada-primary' : 'text-persada-dark' }}">Tentang
                     Kami</a>
                 @auth
-                    <a href="#" @click="isMobileMenuOpen = false"
+                    <a href="{{ route('cart.index') }}" @click="isMobileMenuOpen = false"
                         class="text-xl font-medium text-persada-dark">Keranjang Belanja</a>
                     <a href="#" @click="isMobileMenuOpen = false" class="text-xl font-medium text-persada-dark">Profil
                         Anda</a>

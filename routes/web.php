@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ProductVariantController;
@@ -30,6 +31,11 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:customer')->group(function () {
         Route::get('/products', [AppController::class, 'products'])->name('products.index');
         Route::get('/products/{product}', [AppController::class, 'productDetail'])->name('products.detail');
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+        Route::post('/cart/{cartItem}/update', [CartController::class, 'update'])->name('cart.update');
+        Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
+        Route::post('/cart/update-selection', [CartController::class, 'updateSelection'])->name('cart.update-selection');
     });
 
     Route::prefix('dashboard')->group(function () {
