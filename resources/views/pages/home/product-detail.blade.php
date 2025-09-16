@@ -3,78 +3,35 @@
 @section('title', $product->name)
 
 @section('content')
-    <div class="bg-white pt-32 pb-24" x-data="{
-        mainImage: '{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : 'https://via.placeholder.com/600' }}',
-        selectedVariant: {{ $product->variants->first() ? json_encode($product->variants->first()) : 'null' }},
-        quantity: {{ $product->variants->first()->moq ?? 1 }},
-        activeTab: 'description',
-        increment() {
-            if (this.selectedVariant && this.quantity < this.selectedVariant.stock) {
-                this.quantity++;
-            }
-        },
-        decrement() {
-            if (this.selectedVariant && this.quantity > this.selectedVariant.moq) {
-                this.quantity--;
-            }
-        },
-        updateQuantity(event) {
-            if (!this.selectedVariant) return;
-            let value = parseInt(event.target.value);
-            if (isNaN(value) || value < this.selectedVariant.moq) {
-                this.quantity = this.selectedVariant.moq;
-            } else if (value > this.selectedVariant.stock) {
-                this.quantity = this.selectedVariant.stock;
-            } else {
-                this.quantity = value;
-            }
-        },
-        selectVariant(variant) {
-            this.selectedVariant = variant;
-            if (this.quantity < variant.moq) {
-                this.quantity = variant.moq;
-            } else if (this.quantity > variant.stock) {
-                this.quantity = variant.stock;
-            }
-        }
-    }">
+    <div class="bg-white pt-32 pb-24" x-data="productDetailManager(
+        '{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : asset('images/default-product.png') }}',
+        {{ $product->variants->first() ? json_encode($product->variants->first()) : 'null' }}
+    )">
         <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <nav aria-label="Breadcrumb" class="mb-8">
-                <ol role="list" class="flex items-center space-x-2 text-sm">
-                    <li><a href="{{ route('home') }}" class="text-gray-500 hover:text-gray-700">Beranda</a></li>
-                    <li>
-                        <div class="flex items-center">
-                            <x-heroicon-o-chevron-right class="h-5 w-5 flex-shrink-0 text-gray-300" />
-                            <a href="{{ route('products.index') }}"
-                                class="ml-2 text-gray-500 hover:text-gray-700">Produk</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <x-heroicon-o-chevron-right class="h-5 w-5 flex-shrink-0 text-gray-300" />
-                            <span class="ml-2 text-gray-800 font-medium">{{ $product->name }}</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <x-breadcrumb :items="[
+                ['text' => 'Beranda', 'url' => route('home')],
+                ['text' => 'Produk', 'url' => route('products.index')],
+                ['text' => $product->name],
+            ]" />
 
             <section class="grid grid-cols-1 lg:grid-cols-7 gap-x-12">
                 <div class="lg:col-span-3">
                     <div class="flex flex-col gap-4 sticky top-28">
-                        <div
-                            class="aspect-square w-full overflow-hidden rounded-lg shadow-sm bg-white border border-gray-200/80">
+                        <div class="aspect-square w-full overflow-hidden rounded-xl shadow-lg bg-white">
                             <img :src="mainImage" alt="{{ $product->name }}"
-                                class="h-full w-full object-cover object-center transition-all duration-300">
+                                class="h-full w-full object-cover object-center transition-opacity duration-300"
+                                x-ref="mainImageRef">
                         </div>
                         @if ($product->images->count() > 1)
                             <div class="grid grid-cols-5 gap-4">
                                 @foreach ($product->images as $image)
-                                    <div @click="mainImage = '{{ asset('storage/' . $image->image_path) }}'"
-                                        class="aspect-square cursor-pointer overflow-hidden rounded-md transition"
-                                        :class="{ 'ring-2 ring-persada-primary': mainImage === '{{ asset('storage/' . $image->image_path) }}' }">
+                                    <button type="button"
+                                        @click="changeMainImage('{{ asset('storage/' . $image->image_path) }}')"
+                                        class="aspect-square cursor-pointer overflow-hidden rounded-md transition-all duration-200 focus:outline-none"
+                                        :class="{ 'ring-2 ring-persada-primary ring-offset-2 scale-105': mainImage === '{{ asset('storage/' . $image->image_path) }}' }">
                                         <img src="{{ asset('storage/' . $image->image_path) }}" alt="Thumbnail"
                                             class="h-full w-full object-cover object-center">
-                                    </div>
+                                    </button>
                                 @endforeach
                             </div>
                         @endif
@@ -82,19 +39,17 @@
                 </div>
 
                 <div class="lg:col-span-4 mt-8 lg:mt-0">
-                    <h1 class="text-2xl lg:text-3xl font-bold font-display tracking-tight text-gray-900">
-                        {{ $product->name }}</h1>
-
-                    <div class="mt-4">
-                        <p class="text-3xl tracking-tight text-persada-primary font-sans font-bold">
-                            <span
-                                x-text="selectedVariant ? `Rp${new Intl.NumberFormat('id-ID').format(selectedVariant.price)}` : 'Pilih varian untuk melihat harga'"></span>
-                        </p>
-                    </div>
-
+                    <h1 class="text-3xl lg:text-4xl font-bold font-display text-gray-900">{{ $product->name }}</h1>
+                    <p class="mt-4 text-3xl tracking-tight text-persada-primary font-sans font-bold">
+                        <span x-text="formattedPrice"></span>
+                    </p>
                     <hr class="my-6 border-gray-200">
 
-                    <div class="space-y-6">
+                    <form action="{{ route('cart.store') }}" method="POST" class="space-y-8">
+                        @csrf
+                        <input type="hidden" name="product_variant_id" :value="selectedVariant ? selectedVariant.id : ''">
+                        <input type="hidden" name="quantity" :value="quantity">
+
                         @if ($product->variants->count() > 0)
                             <div class="grid grid-cols-1 gap-y-3">
                                 <label class="text-base font-semibold text-gray-900">Pilih Varian:</label>
@@ -112,18 +67,15 @@
                                                     'opacity-50 cursor-not-allowed': {{ $variant->stock }} === 0
                                                 }"
                                                 class="relative flex min-w-[5rem] items-center justify-center rounded-md border bg-white px-4 py-2 text-sm font-medium transition duration-150 focus:outline-none">
-                                                <span :class="{ 'line-through': {{ $variant->stock }} === 0 }">
-                                                    {{ $variant->name }}
-                                                </span>
+                                                <span
+                                                    :class="{ 'line-through': {{ $variant->stock }} === 0 }">{{ $variant->name }}</span>
                                             </button>
-
                                             <div x-show="selectedVariant && selectedVariant.id === '{{ $variant->id }}'"
                                                 x-transition
                                                 class="pointer-events-none absolute -bottom-1.5 -right-1.5 h-6 w-6">
                                                 <x-heroicon-s-check-circle class="h-6 w-6 text-persada-primary" />
                                                 <div class="absolute inset-0 -z-10 bg-white"></div>
                                             </div>
-
                                         </div>
                                     @endforeach
                                 </div>
@@ -137,7 +89,7 @@
                                     <button type="button" @click="decrement()"
                                         :disabled="!selectedVariant || quantity <= selectedVariant.moq"
                                         class="px-3 py-2 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition">-</button>
-                                    <input type="text" x-model.number="quantity" @change="updateQuantity($event)"
+                                    <input type="text" x-model.number="quantity" @change="validateQuantity()"
                                         class="w-16 border-t-0 border-b-0 border-x text-center focus:ring-0 focus:border-gray-300">
                                     <button type="button" @click="increment()"
                                         :disabled="!selectedVariant || quantity >= selectedVariant.stock"
@@ -151,17 +103,19 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
-                            <button
-                                class="flex-1 w-full flex items-center justify-center rounded-lg border border-persada-primary bg-persada-primary/10 py-3 px-8 text-base font-medium text-persada-primary hover:bg-persada-primary/20 transition-colors">
+                            <button type="submit" :disabled="!selectedVariant"
+                                class="w-full flex-1 flex items-center justify-center rounded-lg border border-persada-primary bg-persada-primary/10 py-3 px-8 text-base font-medium text-persada-primary hover:bg-persada-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 <x-heroicon-o-shopping-cart class="h-5 w-5 mr-2" />
-                                Masukkan Keranjang
+                                <span>Masukkan Keranjang</span>
                             </button>
-                            <button
-                                class="flex-1 w-full flex items-center justify-center rounded-lg border border-transparent bg-persada-primary py-3 px-8 text-base font-medium text-white shadow-sm hover:bg-persada-dark transition-colors">
+                            <a href="#"
+                                class="flex-1 w-full flex items-center justify-center rounded-lg border border-transparent bg-persada-primary py-3 px-8 text-base font-medium text-white shadow-sm hover:bg-persada-dark transition-colors"
+                                :class="{ 'opacity-50 cursor-not-allowed': !selectedVariant }"
+                                @click.prevent="if (!selectedVariant) return;">
                                 Beli Sekarang
-                            </button>
+                            </a>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </section>
 
@@ -210,7 +164,7 @@
                 </div>
             </section>
 
-            @if ($relatedProducts->count() > 0)
+            @if ($relatedProducts->isNotEmpty())
                 <section class="mt-16">
                     <div class="flex items-center justify-between">
                         <h2 class="text-2xl font-bold font-display tracking-tight text-gray-900">Produk Sejenis Lainnya
@@ -230,3 +184,65 @@
         </main>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function productDetailManager(initialImage, initialVariant) {
+            return {
+                mainImage: initialImage,
+                selectedVariant: initialVariant,
+                quantity: initialVariant ? initialVariant.moq : 1,
+                activeTab: 'description',
+
+                get formattedPrice() {
+                    if (!this.selectedVariant) {
+                        return 'Pilih varian untuk melihat harga';
+                    }
+                    return new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(this.selectedVariant.price);
+                },
+
+                init() {
+                    this.$watch('selectedVariant', (newVariant) => this.handleVariantChange(newVariant));
+                },
+                increment() {
+                    if (this.selectedVariant && this.quantity < this.selectedVariant.stock) {
+                        this.quantity++;
+                    }
+                },
+                decrement() {
+                    if (this.selectedVariant && this.quantity > this.selectedVariant.moq) {
+                        this.quantity--;
+                    }
+                },
+                handleVariantChange(variant) {
+                    if (!variant) return;
+
+                    if (this.quantity < variant.moq) this.quantity = variant.moq;
+                    if (this.quantity > variant.stock) this.quantity = variant.stock;
+                },
+                validateQuantity() {
+                    if (!this.selectedVariant) return;
+                    const value = parseInt(this.quantity) || this.selectedVariant
+                        .moq;
+                    if (value < this.selectedVariant.moq) this.quantity = this.selectedVariant.moq;
+                    else if (value > this.selectedVariant.stock) this.quantity = this.selectedVariant.stock;
+                    else this.quantity = value;
+                },
+                selectVariant(variant) {
+                    this.selectedVariant = variant;
+                },
+                changeMainImage(newImageUrl) {
+                    this.$refs.mainImageRef.style.opacity = 0;
+                    setTimeout(() => {
+                        this.mainImage = newImageUrl;
+                        this.$refs.mainImageRef.style.opacity = 1;
+                    }, 200);
+                }
+            }
+        }
+    </script>
+@endpush
