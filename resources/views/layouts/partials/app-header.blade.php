@@ -1,22 +1,12 @@
 @php
-    $isHeroPage = request()->routeIs('home') || request()->routeIs('about');
-
-    $isHomeActive = request()->routeIs('home');
-    $isProductsActive = request()->is('products*');
-    $isAboutActive = request()->routeIs('about');
+    $isHeroPage = request()->routeIs('home', 'about');
 @endphp
 
 <header x-data="{
-    isHeroPage: {{ Illuminate\Support\Js::from($isHeroPage) }},
-    navIsScrolled: !{{ Illuminate\Support\Js::from($isHeroPage) }}
-}" x-init="if (isHeroPage) {
-    navIsScrolled = window.scrollY > 50;
+    navIsScrolled: !{{ Js::from($isHeroPage) }} || window.scrollY > 50,
+    isMobileMenuOpen: false
 }"
-    @scroll.window.debounce.50ms="
-        if (isHeroPage) {
-            navIsScrolled = window.scrollY > 50;
-        }
-    "
+    @scroll.window.debounce.50ms="if ({{ Js::from($isHeroPage) }}) navIsScrolled = window.scrollY > 50"
     :class="{
         'bg-white/95 backdrop-blur-sm shadow-sm border-gray-200 text-persada-dark': navIsScrolled,
         'border-transparent text-white': !navIsScrolled
@@ -25,116 +15,144 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div class="flex justify-between items-center">
-            <a href="/">
+            <a href="{{ route('home') }}">
                 <img :src="navIsScrolled ? '{{ asset('images/company-logo-dark.png') }}' :
                     '{{ asset('images/company-logo-white.png') }}'"
-                    alt="Persada Packaging" class="h-10 md:h-12 w-auto transition-all duration-300">
+                    alt="Persada Packaging" class="h-10 md:h-12 w-auto">
             </a>
 
-            <nav class="hidden md:flex items-center gap-12">
+            <nav class="hidden md:flex items-center gap-12 text-sm font-semibold tracking-wider uppercase">
                 <a href="{{ route('home') }}"
                     :class="{
-                        'border-persada-dark': navIsScrolled && {{ Illuminate\Support\Js::from($isHomeActive) }},
-                        'border-white': !navIsScrolled && {{ Illuminate\Support\Js::from($isHomeActive) }},
-                        'border-transparent': !{{ Illuminate\Support\Js::from($isHomeActive) }},
+                        'border-persada-dark': navIsScrolled && {{ request()->routeIs('home') ? 'true' : 'false' }},
+                        'border-white': !navIsScrolled && {{ request()->routeIs('home') ? 'true' : 'false' }},
+                        'border-transparent': !{{ request()->routeIs('home') ? 'true' : 'false' }},
                         'hover:border-persada-dark': navIsScrolled,
                         'hover:border-white': !navIsScrolled
                     }"
-                    class="border-b-2 pb-1 transition-colors duration-300">
-                    Beranda
-                </a>
+                    class="border-b-2 pb-1 transition-colors duration-300">Beranda</a>
                 <a href="{{ route('products.index') }}"
                     :class="{
-                        'border-persada-dark': navIsScrolled && {{ Illuminate\Support\Js::from($isProductsActive) }},
-                        'border-white': !navIsScrolled && {{ Illuminate\Support\Js::from($isProductsActive) }},
-                        'border-transparent': !{{ Illuminate\Support\Js::from($isProductsActive) }},
+                        'border-persada-dark': {{ request()->is('products*') ? 'true' : 'false' }},
+                        'border-transparent': !{{ request()->is('products*') ? 'true' : 'false' }},
                         'hover:border-persada-dark': navIsScrolled,
                         'hover:border-white': !navIsScrolled
                     }"
-                    class="border-b-2 pb-1 transition-colors duration-300">
-                    Produk
-                </a>
+                    class="border-b-2 pb-1 transition-colors duration-300">Produk</a>
                 <a href="{{ route('about') }}"
                     :class="{
-                        'border-persada-dark': navIsScrolled && {{ Illuminate\Support\Js::from($isAboutActive) }},
-                        'border-white': !navIsScrolled && {{ Illuminate\Support\Js::from($isAboutActive) }},
-                        'border-transparent': !{{ Illuminate\Support\Js::from($isAboutActive) }},
+                        'border-persada-dark': navIsScrolled && {{ request()->routeIs('about') ? 'true' : 'false' }},
+                        'border-white': !navIsScrolled && {{ request()->routeIs('about') ? 'true' : 'false' }},
+                        'border-transparent': !{{ request()->routeIs('about') ? 'true' : 'false' }},
                         'hover:border-persada-dark': navIsScrolled,
                         'hover:border-white': !navIsScrolled
                     }"
-                    class="border-b-2 pb-1 transition-colors duration-300">
-                    Tentang Kami
-                </a>
+                    class="border-b-2 pb-1 transition-colors duration-300">Tentang Kami</a>
             </nav>
 
-            <div class="hidden md:flex items-center space-x-6">
+            <div class="flex items-center gap-x-5">
                 @auth
                     <a href="{{ route('cart.index') }}" title="Keranjang Belanja"
-                        :class="{ 'hover:text-persada-primary': navIsScrolled, 'hover:text-gray-200': !navIsScrolled }">
+                        class="flex items-center transition-colors"
+                        :class="navIsScrolled ? 'hover:text-persada-primary' : 'hover:text-gray-200'">
                         <x-heroicon-o-shopping-bag class="h-6 w-6" />
                     </a>
-                    <a href="#" title="Profil Anda"
-                        :class="{ 'hover:text-persada-primary': navIsScrolled, 'hover:text-gray-200': !navIsScrolled }">
-                        <x-heroicon-o-user class="h-6 w-6" />
-                    </a>
+
+                    <div x-data="{ open: false }" @click.away="open = false" class="relative flex items-center">
+                        <button @click="open = !open" type="button"
+                            class="flex items-center justify-center rounded-full focus:outline-none transition"
+                            :class="{
+                                'text-persada-primary': open,
+                                'hover:text-persada-primary': navIsScrolled,
+                                'hover:text-gray-200': !navIsScrolled
+                            }">
+                            <span class="sr-only">Buka menu pengguna</span>
+                            <x-heroicon-o-user class="h-6 w-6" />
+                        </button>
+
+                        <div x-show="open" x-cloak x-transition
+                            class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg">
+                            <div class="py-2">
+                                <a href="{{ route('profile.index') }}"
+                                    class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-persada-primary">
+                                    <x-heroicon-o-user-circle
+                                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />
+                                    Akun Saya
+                                </a>
+                                <a href="#"
+                                    class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-persada-primary">
+                                    <x-heroicon-o-shopping-bag
+                                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />
+                                    Pesanan Saya
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-persada-primary">
+                                        <x-heroicon-o-power
+                                            class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <a href="{{ route('login') }}"
-                        :class="{
-                            'bg-persada-primary text-white hover:bg-persada-dark': navIsScrolled,
-                            'bg-white text-persada-primary hover:bg-gray-200': !navIsScrolled
-                        }"
-                        class="inline-block font-semibold py-2 px-5 rounded-full text-sm transition-colors duration-300">
+                        class="hidden md:inline-block font-semibold py-2 px-5 rounded-full text-sm transition-colors duration-300"
+                        :class="navIsScrolled ? 'bg-persada-primary text-white hover:bg-persada-dark' :
+                            'bg-white text-persada-primary hover:bg-gray-200'">
                         Masuk
                     </a>
                 @endguest
+
+                <div class="md:hidden flex items-center">
+                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="flex items-center focus:outline-none">
+                        <span class="sr-only">Buka menu</span>
+                        <x-heroicon-o-bars-3 class="h-6 w-6" />
+                    </button>
+                </div>
             </div>
 
-            <div class="md:hidden">
-                <button @click="isMobileMenuOpen = true" class="focus:outline-none">
-                    <span class="sr-only">Buka menu</span>
-                    <x-heroicon-o-bars-3 class="h-7 w-7" />
-                </button>
-            </div>
         </div>
     </div>
-</header>
 
-<div x-show="isMobileMenuOpen" x-cloak x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0" class="fixed inset-0 bg-white z-[100] md:hidden">
-    <div class="w-full h-full flex flex-col">
+    <div x-show="isMobileMenuOpen" x-cloak x-transition.opacity.duration.300ms
+        class="fixed inset-0 z-[100] bg-white h-screen w-screen md:hidden flex flex-col">
         <div class="flex justify-between items-center px-4 sm:px-6 h-24">
-            <a href="/">
+            <a href="{{ route('home') }}">
                 <img src="{{ asset('images/company-logo-dark.png') }}" alt="Persada Packaging" class="h-10 w-auto">
             </a>
             <button @click="isMobileMenuOpen = false">
-                <span class="sr-only">Tutup menu</span>
                 <x-heroicon-o-x-mark class="h-7 w-7 text-gray-700" />
             </button>
         </div>
-        <div class="flex-grow flex flex-col justify-center items-center -mt-12">
+
+        <div class="flex-1 flex flex-col justify-center items-center">
             <nav class="flex flex-col items-center space-y-8 text-center">
                 <a href="{{ route('home') }}" @click="isMobileMenuOpen = false"
-                    class="text-xl font-medium {{ $isHomeActive ? 'text-persada-primary' : 'text-persada-dark' }}">Beranda</a>
+                    class="text-xl font-medium {{ request()->routeIs('home') ? 'text-persada-primary' : 'text-gray-800' }}">
+                    Beranda
+                </a>
                 <a href="{{ route('products.index') }}" @click="isMobileMenuOpen = false"
-                    class="text-xl font-medium {{ $isProductsActive ? 'text-persada-primary' : 'text-persada-dark' }}">Produk</a>
+                    class="text-xl font-medium {{ request()->is('products*') ? 'text-persada-primary' : 'text-gray-800' }}">
+                    Produk
+                </a>
                 <a href="{{ route('about') }}" @click="isMobileMenuOpen = false"
-                    class="text-xl font-medium {{ $isAboutActive ? 'text-persada-primary' : 'text-persada-dark' }}">Tentang
-                    Kami</a>
-                @auth
-                    <a href="{{ route('cart.index') }}" @click="isMobileMenuOpen = false"
-                        class="text-xl font-medium text-persada-dark">Keranjang Belanja</a>
-                    <a href="#" @click="isMobileMenuOpen = false" class="text-xl font-medium text-persada-dark">Profil
-                        Anda</a>
-                @endauth
+                    class="text-xl font-medium {{ request()->routeIs('about') ? 'text-persada-primary' : 'text-gray-800' }}">
+                    Tentang Kami
+                </a>
             </nav>
-            @guest
-                <div class="mt-12 w-full px-8">
-                    <a href="{{ route('login') }}"
-                        class="block w-full text-center bg-persada-primary text-white font-semibold py-3 px-4 rounded-full text-lg">Masuk</a>
-                </div>
-            @endguest
         </div>
+
+        @guest
+            <div class="px-8 pb-10">
+                <a href="{{ route('login') }}"
+                    class="block w-full text-center bg-persada-primary text-white font-semibold py-3 px-4 rounded-full text-lg">
+                    Masuk
+                </a>
+            </div>
+        @endguest
     </div>
-</div>
+
+</header>
