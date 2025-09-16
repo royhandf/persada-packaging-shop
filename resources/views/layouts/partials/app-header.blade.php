@@ -58,14 +58,16 @@
                         <x-heroicon-o-shopping-bag class="h-6 w-6" />
                     </a>
 
-                    <div x-data="{ open: false }" @click.away="open = false" class="relative flex items-center">
+                    <div x-data="{ open: false }" @click.away="open = false" class="relative">
                         <button @click="open = !open" type="button"
-                            class="flex items-center justify-center rounded-full focus:outline-none transition"
+                            class="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white transition"
                             :class="{
-                                'text-persada-primary': open,
+                                'text-white': open,
                                 'hover:text-persada-primary': navIsScrolled,
-                                'hover:text-gray-200': !navIsScrolled
+                                'hover:text-gray-200':
+                                    !navIsScrolled
                             }">
+
                             <span class="sr-only">Buka menu pengguna</span>
                             <x-heroicon-o-user class="h-6 w-6" />
                         </button>
