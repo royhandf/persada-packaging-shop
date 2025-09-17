@@ -55,19 +55,4 @@ class SettingController extends Controller
 
         return redirect()->route('settings.index')->with('success', 'Pengaturan berhasil diperbarui.');
     }
-
-    public function provinces()
-    {
-        return $this->rajaOngkir->getProvinces();
-    }
-
-    public function cities($provinceId)
-    {
-        return $this->rajaOngkir->getCities($provinceId);
-    }
-
-    public function districts($cityId)
-    {
-        return $this->rajaOngkir->getDistricts($cityId);
-    }
 }
