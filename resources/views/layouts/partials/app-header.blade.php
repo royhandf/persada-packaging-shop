@@ -75,7 +75,7 @@
                         <div x-show="open" x-cloak x-transition
                             class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg">
                             <div class="py-2">
-                                <a href="{{ route('profile.index') }}"
+                                <a href="{{ route('customer.profile.index') }}"
                                     class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-persada-primary">
                                     <x-heroicon-o-user-circle
                                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />

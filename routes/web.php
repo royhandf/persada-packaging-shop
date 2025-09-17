@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AdminManagementController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ProductVariantController;
@@ -24,9 +26,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('provinces', [SettingController::class, 'provinces'])->name('api.provinces');
-    Route::get('cities/{provinceId}', [SettingController::class, 'cities'])->name('api.cities');
-    Route::get('districts/{cityId}', [SettingController::class, 'districts'])->name('api.districts');
+    Route::get('/provinces', [LocationController::class, 'provinces'])->name('api.provinces');
+    Route::get('/cities/{provinceId}', [LocationController::class, 'cities'])->name('api.cities');
+    Route::get('/districts/{cityId}', [LocationController::class, 'districts'])->name('api.districts');
 
     Route::middleware('role:customer')->group(function () {
         Route::get('/products', [AppController::class, 'products'])->name('products.index');
@@ -36,6 +38,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/cart/{cartItem}/update', [CartController::class, 'update'])->name('cart.update');
         Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
         Route::post('/cart/update-selection', [CartController::class, 'updateSelection'])->name('cart.update-selection');
+
+        Route::prefix('profile')->name('customer.profile.')->group(function () {
+            Route::get('/', [CustomerProfileController::class, 'index'])->name('index');
+            Route::patch('/update', [CustomerProfileController::class, 'updateProfile'])->name('update');
+            Route::put('/password', [CustomerProfileController::class, 'updatePassword'])->name('password.update');
+
+            Route::get('/addresses', [CustomerProfileController::class, 'address'])->name('address.index');
+            Route::post('/addresses', [CustomerProfileController::class, 'storeAddress'])->name('address.store');
+            Route::delete('/addresses/{address}', [CustomerProfileController::class, 'destroyAddress'])->name('address.destroy');
+            Route::patch('/addresses/{address}/set-primary', [CustomerProfileController::class, 'setPrimaryAddress'])->name('address.setPrimary');
+        });
     });
 
     Route::prefix('dashboard')->group(function () {
