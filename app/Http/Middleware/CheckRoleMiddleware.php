@@ -23,12 +23,18 @@ class CheckRoleMiddleware
 
         $user = Auth::user();
 
-        foreach ($roles as $role) {
-            if ($user->role === $role) {
-                return $next($request);
-            }
+        if (in_array($user->role, $roles)) {
+            return $next($request);
         }
 
-        abort(403, 'Unauthorized action.');
+        switch ($user->role) {
+            case 'admin':
+            case 'superadmin':
+                return redirect()->route('dashboard');
+            case 'customer':
+                return redirect()->route('home');
+            default:
+                return redirect('login');
+        }
     }
 }
