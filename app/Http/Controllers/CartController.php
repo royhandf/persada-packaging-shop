@@ -14,6 +14,8 @@ class CartController extends Controller
      */
     public function index()
     {
+        session()->forget('buy_now_cart_item_id');
+
         $cartItems = CartItem::where('user_id', Auth::id())
             ->with('productVariant.product.primaryImage')
             ->latest()
@@ -27,39 +29,40 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'product_variant_id' => 'required|exists:product_variants,id',
-            'quantity' => 'required|integer|min:1',
+        $validated = $request->validate([
+            'product_variant_id' => ['required', 'exists:product_variants,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'action' => ['required', 'string', 'in:add_to_cart,buy_now'],
         ]);
 
-        $variant = ProductVariant::findOrFail($request->product_variant_id);
-        $user = Auth::user();
+        $variant = ProductVariant::findOrFail($validated['product_variant_id']);
+        $user = $request->user();
 
-        if ($request->quantity > $variant->stock) {
-            return back()->with('error', 'Stok tidak mencukupi.');
-        }
-
-        $cartItem = CartItem::where('user_id', $user->id)
+        $cartItem = $user->cartItems()
             ->where('product_variant_id', $variant->id)
             ->first();
 
-        if ($cartItem) {
-            $newQuantity = $cartItem->quantity + $request->quantity;
-            if ($newQuantity > $variant->stock) {
-                return back()->with('error', 'Jumlah produk di keranjang melebihi stok yang tersedia.');
-            }
-            $cartItem->quantity = $newQuantity;
-            $cartItem->save();
-        } else {
-            CartItem::create([
-                'user_id' => $user->id,
-                'product_variant_id' => $variant->id,
-                'quantity' => $request->quantity,
-                'selected' => true,
-            ]);
+        $totalQuantity = ($cartItem->quantity ?? 0) + $validated['quantity'];
+        if ($totalQuantity > $variant->stock) {
+            return back()->with('error', 'Jumlah produk di keranjang melebihi stok yang tersedia.');
         }
 
-        return redirect()->route('cart.index')->with('success', 'Produk berhasil ditambahkan ke keranjang.');
+        $cartItem = $user->cartItems()->updateOrCreate(
+            [
+                'product_variant_id' => $variant->id,
+            ],
+            [
+                'quantity' => $totalQuantity,
+                'selected' => true,
+            ]
+        );
+
+        if ($validated['action'] === 'buy_now') {
+            session(['buy_now_cart_item_id' => $cartItem->id]);
+            return redirect()->route('checkout.index');
+        }
+
+        return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
 
     /**

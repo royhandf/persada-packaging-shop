@@ -121,10 +121,18 @@
                                         </div>
                                     </dl>
                                     <div class="mt-6">
-                                        <button :disabled="selectedItems.length === 0"
-                                            class="w-full flex items-center justify-center rounded-lg bg-persada-primary py-3 px-4 text-base font-medium text-white shadow hover:bg-persada-dark transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                        <a href="{{ route('checkout.index') }}"
+                                            :class="{
+                                                'bg-persada-primary text-white hover:bg-persada-dark': selectedItems
+                                                    .length > 0,
+                                                'bg-gray-300 text-gray-500 cursor-not-allowed': selectedItems.length ===
+                                                    0
+                                            }"
+                                            @click="if (selectedItems.length === 0) $event.preventDefault()"
+                                            class="w-full flex items-center justify-center rounded-lg py-3 px-4 text-base font-medium shadow transition">
                                             Beli (<span x-text="selectedItems.length"></span>)
-                                        </button>
+                                        </a>
+
                                     </div>
                                 </div>
                             </div>

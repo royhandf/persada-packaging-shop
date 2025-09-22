@@ -195,7 +195,7 @@
                             this.$refs.trixEditor.editor.loadHTML('');
                         });
 
-                    } else { // Mode Edit
+                    } else {
                         this.isAddMode = false;
                         this.modalTitle = 'Edit Produk';
                         this.submitText = 'Simpan';

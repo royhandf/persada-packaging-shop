@@ -92,28 +92,42 @@
                                     <input type="text" x-model.number="quantity" @change="validateQuantity()"
                                         class="w-16 border-t-0 border-b-0 border-x text-center focus:ring-0 focus:border-gray-300">
                                     <button type="button" @click="increment()"
-                                        :disabled="!selectedVariant || quantity >= selectedVariant.stock"
+                                        :disabled="!selectedVariant || quantity >= selectedVariant.available_stock"
                                         class="px-3 py-2 text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition">+</button>
                                 </div>
                                 <div class="ml-4 text-sm text-gray-500" x-show="selectedVariant">
-                                    <p>Stok: <span x-text="selectedVariant.stock"></span></p>
+                                    <p>Stok: <span x-text="selectedVariant.available_stock"></span></p>
                                     <p>Min. Beli: <span x-text="selectedVariant.moq"></span></p>
                                 </div>
                             </div>
                         </div>
 
+                        <div x-show="selectedVariant && !isPurchasable" x-cloak class="rounded-md bg-yellow-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <x-heroicon-s-exclamation-triangle class="h-5 w-5 text-yellow-400" />
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-yellow-800">Stok Tidak Cukup</h3>
+                                    <div class="mt-2 text-sm text-yellow-700">
+                                        <p>Stok yang tersedia saat ini tidak dapat memenuhi kuantitas pesanan minimum (MOQ).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
-                            <button type="submit" :disabled="!selectedVariant"
+                            <button type="submit" name="action" value="add_to_cart" :disabled="!isPurchasable"
                                 class="w-full flex-1 flex items-center justify-center rounded-lg border border-persada-primary bg-persada-primary/10 py-3 px-8 text-base font-medium text-persada-primary hover:bg-persada-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 <x-heroicon-o-shopping-cart class="h-5 w-5 mr-2" />
                                 <span>Masukkan Keranjang</span>
                             </button>
-                            <a href="#"
-                                class="flex-1 w-full flex items-center justify-center rounded-lg border border-transparent bg-persada-primary py-3 px-8 text-base font-medium text-white shadow-sm hover:bg-persada-dark transition-colors"
-                                :class="{ 'opacity-50 cursor-not-allowed': !selectedVariant }"
-                                @click.prevent="if (!selectedVariant) return;">
+
+                            <button type="submit" name="action" value="buy_now" :disabled="!isPurchasable"
+                                class="flex-1 w-full flex items-center justify-center rounded-lg border border-transparent bg-persada-primary py-3 px-8 text-base font-medium text-white shadow-sm hover:bg-persada-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 Beli Sekarang
-                            </a>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -194,6 +208,13 @@
                 quantity: initialVariant ? initialVariant.moq : 1,
                 activeTab: 'description',
 
+                get isPurchasable() {
+                    if (!this.selectedVariant) {
+                        return false;
+                    }
+                    return this.selectedVariant.available_stock >= this.selectedVariant.moq;
+                },
+
                 get formattedPrice() {
                     if (!this.selectedVariant) {
                         return 'Pilih varian untuk melihat harga';
@@ -208,33 +229,43 @@
                 init() {
                     this.$watch('selectedVariant', (newVariant) => this.handleVariantChange(newVariant));
                 },
+
                 increment() {
-                    if (this.selectedVariant && this.quantity < this.selectedVariant.stock) {
+                    if (this.selectedVariant && this.quantity < this.selectedVariant.available_stock) {
                         this.quantity++;
                     }
                 },
+
                 decrement() {
                     if (this.selectedVariant && this.quantity > this.selectedVariant.moq) {
                         this.quantity--;
                     }
                 },
+
                 handleVariantChange(variant) {
                     if (!variant) return;
 
                     if (this.quantity < variant.moq) this.quantity = variant.moq;
-                    if (this.quantity > variant.stock) this.quantity = variant.stock;
+                    if (this.quantity > variant.available_stock) this.quantity = variant.available_stock;
                 },
+
                 validateQuantity() {
                     if (!this.selectedVariant) return;
-                    const value = parseInt(this.quantity) || this.selectedVariant
-                        .moq;
-                    if (value < this.selectedVariant.moq) this.quantity = this.selectedVariant.moq;
-                    else if (value > this.selectedVariant.stock) this.quantity = this.selectedVariant.stock;
-                    else this.quantity = value;
+                    const value = parseInt(this.quantity) || this.selectedVariant.moq;
+
+                    if (value < this.selectedVariant.moq) {
+                        this.quantity = this.selectedVariant.moq;
+                    } else if (value > this.selectedVariant.available_stock) {
+                        this.quantity = this.selectedVariant.available_stock;
+                    } else {
+                        this.quantity = value;
+                    }
                 },
+
                 selectVariant(variant) {
                     this.selectedVariant = variant;
                 },
+
                 changeMainImage(newImageUrl) {
                     this.$refs.mainImageRef.style.opacity = 0;
                     setTimeout(() => {
