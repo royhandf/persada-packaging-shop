@@ -45,15 +45,17 @@
                                 <p class="text-xs italic text-gray-500 dark:text-gray-400">
                                     {{ ucfirst(auth()->user()->role) }}</p>
                             </div>
-                            <a href="#"
-                                class="block w-full rounded-md px-3 pb-1 pt-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50">
-                                Settings
-                            </a>
+                            @if (auth()->user()->role === 'superadmin')
+                                <a href="{{ route('settings.index') }}"
+                                    class="block w-full rounded-md px-3 pb-1 pt-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50">
+                                    Pengaturan
+                                </a>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
                                     class="block w-full cursor-pointer rounded-md px-3 py-1 text-left text-sm text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-700/50">
-                                    Sign Out
+                                    Keluar
                                 </button>
                             </form>
                         </div>
