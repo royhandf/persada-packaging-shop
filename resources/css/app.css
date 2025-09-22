@@ -36,6 +36,7 @@
 @import "notyf/notyf.min.css";
 @import "trix/dist/trix.css";
 @import "range-slider-input/dist/style.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -104,5 +105,9 @@
     #price-slider-desktop .range-slider__thumb[data-active],
     #price-slider-mobile .range-slider__thumb[data-active] {
         transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    .leaflet-container {
+        z-index: 10 !important;
     }
 }

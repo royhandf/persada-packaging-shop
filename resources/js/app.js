@@ -4,6 +4,7 @@ import Alpine from "alpinejs";
 import Swal from "sweetalert2";
 import intersect from "@alpinejs/intersect";
 import rangeSlider from "range-slider-input";
+import L from "leaflet";
 import "trix";
 
 Alpine.plugin(intersect);
@@ -11,6 +12,7 @@ Alpine.plugin(intersect);
 window.Alpine = Alpine;
 Alpine.start();
 
+window.L = L;
 window.Swal = Swal;
 window.rangeSlider = rangeSlider;
 window.notyf = new Notyf({

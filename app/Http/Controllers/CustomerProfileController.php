@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserAddress;
+use App\Services\BiteshipService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -54,13 +55,10 @@ class CustomerProfileController extends Controller
             'receiver_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'street_address' => 'required|string',
-            'province' => 'required|string',
-            'city' => 'required|string',
-            'subdistrict' => 'required|string',
-            'postal_code' => 'required|string|max:10',
-            'province_id' => 'nullable|string',
-            'city_id' => 'nullable|string',
-            'subdistrict_id' => 'nullable|string',
+            'area_id' => 'required|string',
+            'area_name' => 'required|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'is_primary' => 'nullable|boolean',
         ]);
 
@@ -93,5 +91,13 @@ class CustomerProfileController extends Controller
         $user->addresses()->update(['is_primary' => false]);
         $address->update(['is_primary' => true]);
         return back()->with('success', 'Alamat utama berhasil diubah.');
+    }
+
+    public function searchLocation(Request $request)
+    {
+        $request->validate(['q' => 'required|string|min:2']);
+        $results = app(BiteshipService::class)->searchAreas($request->q);
+
+        return response()->json($results['areas'] ?? []);
     }
 }

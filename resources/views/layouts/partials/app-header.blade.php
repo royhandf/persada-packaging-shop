@@ -60,9 +60,8 @@
 
                     <div x-data="{ open: false }" @click.away="open = false" class="relative">
                         <button @click="open = !open" type="button"
-                            class="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white transition"
+                            class="flex rounded-full text-sm focus:outline-none focus:text-persada-primary transition-colors"
                             :class="{
-                                'text-white': open,
                                 'hover:text-persada-primary': navIsScrolled,
                                 'hover:text-gray-200':
                                     !navIsScrolled
@@ -81,7 +80,7 @@
                                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />
                                     Akun Saya
                                 </a>
-                                <a href="#"
+                                <a href="{{ route('orders.index') }}"
                                     class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-persada-primary">
                                     <x-heroicon-o-shopping-bag
                                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />

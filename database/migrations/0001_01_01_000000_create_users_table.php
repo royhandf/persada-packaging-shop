@@ -30,18 +30,7 @@ return new class extends Migration
             $table->string('label');
             $table->string('receiver_name');
             $table->string('phone');
-            $table->text('street_address'); // Nama jalan, nomor rumah, gedung, blok, RT/RW
-            $table->string('village')->nullable();       // Kelurahan / Desa
-            $table->string('subdistrict');    // Kecamatan
-            $table->string('city');           // Kota / Kabupaten
-            $table->string('province');       // Provinsi
-            $table->string('postal_code', 10);
-
-            // --- ID untuk Integrasi API Kurir (e.g., RajaOngkir) ---
-            // Tipe data string untuk fleksibilitas (beberapa API menggunakan angka, yg lain bisa kombinasi)
-            $table->string('province_id')->nullable();
-            $table->string('city_id')->nullable();
-            $table->string('subdistrict_id')->nullable();
+            $table->text('street_address');
 
             $table->boolean('is_primary')->default(false);
 

@@ -16,14 +16,10 @@ class UserAddress extends Model
         'receiver_name',
         'phone',
         'street_address',
-        'village',
-        'subdistrict',
-        'city',
-        'province',
-        'postal_code',
-        'province_id',
-        'city_id',
-        'subdistrict_id',
+        'area_id',
+        'area_name',
+        'latitude',
+        'longitude',
         'is_primary'
     ];
 
