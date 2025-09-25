@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('orders', [OrderController::class, 'index'])->name('order.index');
         Route::get('orders/{order:order_number}', [OrderController::class, 'orderDetail'])->name('order.detail');
+        Route::get('orders/{order:order_number}/invoice', [OrderController::class, 'invoice'])->name('order.invoice');
 
         Route::prefix('profile')->name('customer.profile.')->group(function () {
             Route::get('/', [CustomerProfileController::class, 'index'])->name('index');

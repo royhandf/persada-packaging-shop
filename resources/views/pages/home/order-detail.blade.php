@@ -18,6 +18,13 @@
                         <p class="mt-1 text-base text-gray-500">#{{ $order->order_number }} &bull; Dipesan pada
                             {{ $order->created_at->format('d F Y') }}</p>
                     </div>
+                    <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
+                        <a href="{{ route('order.invoice', $order) }}"
+                            class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            <x-heroicon-o-arrow-down-tray class="h-5 w-5 text-gray-500" />
+                            Download Invoice
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -94,7 +101,7 @@
                     <div class="bg-gray-50 rounded-2xl p-6">
                         <h3 class="text-base font-semibold text-gray-900">Total Pembayaran</h3>
                         <p class="mt-2 text-3xl font-bold text-persada-primary">
-                            Rp{{ number_format($order->grand_total, 0, ',', '.') }}</p>
+                            Rp {{ number_format($order->grand_total, 0, ',', '.') }}</p>
                         <p class="text-sm text-gray-500">melalui
                             {{ strtoupper(str_replace('_', ' ', $order->payment_method)) }}</p>
                     </div>

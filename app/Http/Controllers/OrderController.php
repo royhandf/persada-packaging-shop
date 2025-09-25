@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,5 +40,18 @@ class OrderController extends Controller
         }
 
         return view('pages.home.order-detail', compact('order'));
+    }
+
+    public function invoice(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(404);
+        }
+
+        $pdf = Pdf::loadView('pages.home.invoice', compact('order'));
+
+        $fileName = 'invoice-' . $order->order_number . '.pdf';
+
+        return $pdf->download($fileName);
     }
 }
