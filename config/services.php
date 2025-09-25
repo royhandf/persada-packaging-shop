@@ -35,8 +35,15 @@ return [
         ],
     ],
 
-    'rajaongkir' => [
-        'key' => env('RAJAONGKIR_API_KEY'),
-        'url' => env('RAJAONGKIR_BASE_URL'),
+    'biteship' => [
+        'key' => env('BITESHIP_API_KEY'),
+        'url' => env('BITESHIP_BASE_URL'),
+    ],
+
+    'midtrans' => [
+        'merchant_id' => env('MIDTRANS_MERCHANT_ID'),
+        'client_key'  => env('MIDTRANS_CLIENT_KEY'),
+        'server_key'  => env('MIDTRANS_SERVER_KEY'),
+        'is_production' => env('MIDTRANS_PRODUCTION', false),
     ],
 ];

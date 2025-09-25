@@ -24,6 +24,9 @@ class Order extends Model
         'payment_method',
         'payment_gateway_id',
         'paid_at',
+        'status',
+        'payment_token',
+        'payment_url',
         'note'
     ];
 

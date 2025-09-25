@@ -1,10 +1,16 @@
 @extends('layouts.app')
 @section('title', 'Checkout')
 
+@push('head')
+    <script type="text/javascript"
+        src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@endpush
+
 @section('content')
     <div class="bg-gray-50 pt-36 pb-32" x-data="checkoutManager({{ $addresses->toJson() }}, {{ $primaryAddress ? "'" . $primaryAddress->id . "'" : 'null' }}, {{ $cartItems->sum(fn($i) => $i->productVariant->price * $i->quantity) }})">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <form method="POST" action="{{ route('checkout.store') }}"
+            <form @submit.prevent="processCheckout" x-ref="checkoutForm"
                 class="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-10 items-start">
                 @csrf
 
@@ -12,9 +18,7 @@
                 <input type="hidden" name="shipping_rate" x-model="selectedCourierJson">
                 <input type="hidden" name="payment_method" x-model="selectedPayment">
 
-                {{-- Kolom Kiri: Alamat, Pengiriman, Pembayaran --}}
                 <div class="lg:col-span-2 space-y-8">
-                    {{-- 1. Alamat Pengiriman --}}
                     <section class="bg-white p-6 rounded-xl shadow-sm">
                         <h2 class="text-xl font-semibold mb-4 text-gray-800">1. Alamat Pengiriman</h2>
                         @if ($addresses->isNotEmpty())
@@ -47,7 +51,6 @@
                         @endif
                     </section>
 
-                    {{-- 2. Opsi Pengiriman --}}
                     <section class="bg-white p-6 rounded-xl shadow-sm">
                         <h2 class="text-xl font-semibold mb-4 text-gray-800">2. Opsi Pengiriman</h2>
                         <div x-show="loading" class="text-center py-4 text-gray-500">Memuat opsi pengiriman...</div>
@@ -78,7 +81,6 @@
                             dahulu untuk melihat opsi pengiriman.</div>
                     </section>
 
-                    {{-- 3. Metode Pembayaran --}}
                     <section class="bg-white p-6 rounded-xl shadow-sm">
                         <h2 class="text-xl font-semibold mb-4 text-gray-800">3. Metode Pembayaran</h2>
                         @if (!empty($activePaymentMethods))
@@ -100,10 +102,7 @@
                     </section>
                 </div>
 
-                {{-- Kolom Kanan: Ringkasan & Produk --}}
                 <div class="lg:col-span-1 space-y-8">
-
-                    {{-- [FIX] Div Pembungkus untuk Sticky Element --}}
                     <div>
                         <div class="bg-white rounded-xl shadow-sm p-6 sticky top-28">
                             <h2 class="text-xl font-semibold mb-5 text-gray-800">Ringkasan Pesanan</h2>
@@ -122,14 +121,17 @@
                                     <span x-text="`Rp${formatCurrency(grandTotal)}`"></span>
                                 </div>
                             </div>
-                            <button type="submit" :disabled="!selectedAddressId || !selectedCourier || !selectedPayment"
-                                class="w-full mt-6 bg-persada-primary text-white py-3 px-6 rounded-lg hover:bg-persada-dark transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                Buat Pesanan
+                            <button type="submit" :disabled="!isFormComplete() || isProcessing"
+                                class="w-full mt-6 bg-persada-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-persada-dark transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center">
+                                <span x-show="!isProcessing">Bayar Sekarang</span>
+                                <span x-show="isProcessing" class="flex items-center">
+                                    <x-heroicon-s-cog-6-tooth class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                                    Memproses...
+                                </span>
                             </button>
                         </div>
                     </div>
 
-                    {{-- Card Produk (Sekarang aman dari tabrakan) --}}
                     <section class="bg-white p-6 rounded-xl shadow-sm">
                         <h3 class="text-xl font-semibold mb-5 text-gray-800">Produk Pesanan</h3>
                         <ul class="space-y-5">
@@ -153,29 +155,6 @@
                     </section>
                 </div>
             </form>
-
-            {{-- Bagian Notifikasi Error --}}
-            @if ($errors->any())
-                <div class="fixed top-28 right-4 z-50">
-                    <div class="w-full max-w-sm p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg shadow-lg"
-                        role="alert">
-                        <p class="font-bold mb-2">Terjadi Kesalahan Validasi:</p>
-                        <ul class="list-disc list-inside text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="fixed top-28 right-4 z-50">
-                    <div class="w-full max-w-sm p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg shadow-lg"
-                        role="alert">
-                        <p class="font-bold">{{ session('error') }}</p>
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
 @endsection
@@ -193,9 +172,14 @@
                 selectedCourierJson: '',
                 selectedPayment: '',
                 subtotal: cartSubtotal,
+                isProcessing: false,
 
                 get grandTotal() {
                     return this.subtotal + (this.selectedCourier ? this.selectedCourier.price : 0);
+                },
+
+                isFormComplete() {
+                    return this.selectedAddressId && this.selectedCourier && this.selectedPayment;
                 },
 
                 init() {
@@ -230,12 +214,8 @@
                                 address_id: this.selectedAddressId
                             })
                         });
-
                         const data = await response.json();
-                        if (!response.ok) {
-                            throw new Error(data.message || 'Gagal memuat ongkir.');
-                        }
-
+                        if (!response.ok) throw new Error(data.message || 'Gagal memuat ongkir.');
                         this.shippingRates = data.pricing || [];
                         if (this.shippingRates.length === 0) {
                             this.error = 'Tidak ada layanan kurir yang tersedia untuk tujuan ini.';
@@ -244,6 +224,73 @@
                         this.error = e.message;
                     } finally {
                         this.loading = false;
+                    }
+                },
+
+                async processCheckout() {
+                    if (!this.isFormComplete()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Form Belum Lengkap',
+                            text: 'Harap lengkapi semua informasi: alamat, pengiriman, dan metode pembayaran.',
+                        });
+                        return;
+                    }
+
+                    this.isProcessing = true;
+                    this.error = '';
+                    const formData = new FormData(this.$refs.checkoutForm);
+
+                    try {
+                        const response = await fetch('{{ route('checkout.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: formData
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message ||
+                            `Terjadi kesalahan (Error ${response.status})`);
+
+                        if (data.snap_token) {
+                            window.snap.pay(data.snap_token, {
+                                onSuccess: (result) => {
+                                    const successUrl = "{{ url('orders') }}/" + result.order_id +
+                                        "?status=success";
+                                    window.location.href = successUrl;
+                                },
+                                onPending: (result) => {
+                                    const pendingUrl = "{{ url('orders') }}/" + result.order_id +
+                                        "?status=pending";
+                                    window.location.href = pendingUrl;
+                                },
+                                onError: (result) => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Pembayaran Gagal',
+                                        text: 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.',
+                                    });
+                                },
+                                onClose: () => {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Pembayaran Ditutup',
+                                        text: 'Anda menutup jendela pembayaran sebelum transaksi selesai.',
+                                    });
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        this.error = e.message;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops... Terjadi Kesalahan',
+                            text: e.message,
+                        });
+                    } finally {
+                        this.isProcessing = false;
                     }
                 }
             }

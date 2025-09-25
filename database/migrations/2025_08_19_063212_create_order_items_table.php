@@ -19,7 +19,7 @@ return new class extends Migration
             // Snapshot Data - SANGAT PENTING
             $table->string('product_name');
             $table->string('variant_name');
-            $table->string('sku');
+            $table->string('sku')->nullable();
             $table->decimal('price_at_purchase', 15, 2);
             $table->integer('quantity');
             $table->unsignedInteger('weight_in_grams');

@@ -23,6 +23,7 @@
             scrollbar-width: none;
         }
     </style>
+    @stack('head')
 </head>
 
 <body class="bg-gray-50 text-persada-dark font-sans" x-data="{ isMobileMenuOpen: false }"

@@ -10,10 +10,10 @@ use App\Models\Setting;
 use App\Models\UserAddress;
 use App\Services\BiteshipService;
 use App\Services\PaymentService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Exception;
 use Throwable;
 
 class CheckoutController extends Controller
@@ -64,13 +64,12 @@ class CheckoutController extends Controller
             'payment_qris_active' => 'QRIS',
             'payment_gopay_active' => 'GoPay',
             'payment_shopeepay_active' => 'ShopeePay',
-            'payment_dana_active' => 'DANA',
         ];
 
         $activePaymentMethods = [];
         foreach ($paymentOptions as $key => $label) {
             if (!empty($settings[$key]) && $settings[$key] == '1') {
-                $code = str_replace('payment_', '', str_replace('_active', '', $key));
+                $code = str_replace(['payment_', '_active'], '', $key);
                 $activePaymentMethods[$code] = $label;
             }
         }
@@ -120,12 +119,12 @@ class CheckoutController extends Controller
 
         $shippingRate = json_decode($validated['shipping_rate'], true);
         if (!isset($shippingRate['price'], $shippingRate['courier_name'], $shippingRate['courier_service_name'])) {
-            return back()->with('error', 'Opsi pengiriman tidak valid.')->withInput();
+            return response()->json(['message' => 'Opsi pengiriman tidak valid.'], 422);
         }
 
         $cartItems = $this->getItemsForCheckout();
         if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Sesi checkout Anda telah berakhir. Silakan coba lagi.');
+            return response()->json(['message' => 'Sesi checkout Anda telah berakhir. Silakan muat ulang halaman.'], 400);
         }
 
         try {
@@ -138,9 +137,10 @@ class CheckoutController extends Controller
                 }
                 $address = UserAddress::findOrFail($validated['address_id']);
                 $subtotal = $cartItems->sum(fn($item) => $item->productVariant->price * $item->quantity);
+                $orderNumber = 'ORD-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6));
 
                 $order = Order::create([
-                    'order_number' => 'ORD-' . strtoupper(Str::random(10)),
+                    'order_number' => $orderNumber,
                     'user_id' => $user->id,
                     'shipping_address' => $address->toArray(),
                     'shipping_courier' => $shippingRate['courier_name'],
@@ -167,13 +167,20 @@ class CheckoutController extends Controller
                 }
 
                 CartItem::whereIn('id', $cartItems->pluck('id'))->delete();
+                session()->forget('buy_now_cart_item_id');
 
                 return $order;
             });
 
             $paymentService->createTransaction($order);
+            $order->refresh();
+
+            return response()->json([
+                'snap_token' => $order->payment_token,
+                'order_id'   => $order->order_number,
+            ]);
         } catch (Throwable $e) {
-            return back()->with('error', 'Gagal membuat pesanan: ' . $e->getMessage())->withInput();
+            return response()->json(['message' => 'Gagal membuat pesanan: ' . $e->getMessage()], 500);
         }
     }
 }

@@ -80,7 +80,7 @@
                                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />
                                     Akun Saya
                                 </a>
-                                <a href="{{ route('orders.index') }}"
+                                <a href="{{ route('order.index') }}"
                                     class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-persada-primary">
                                     <x-heroicon-o-shopping-bag
                                         class="mr-3 h-5 w-5 text-gray-400 group-hover:text-persada-primary" />

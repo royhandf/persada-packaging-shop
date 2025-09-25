@@ -8,6 +8,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
@@ -23,6 +24,8 @@ Route::get('login', [AuthController::class, 'loginIndex'])->name('login');
 Route::post('login', [AuthController::class, 'login']);
 Route::get('register', [AuthController::class, 'registerIndex'])->name('register');
 Route::post('register', [AuthController::class, 'register']);
+
+Route::post('/midtrans/notification', [MidtransController::class, 'webhook']);
 
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
@@ -41,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::post('checkout/calculate-shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculate-shipping');
 
+        Route::get('orders', [OrderController::class, 'index'])->name('order.index');
         Route::get('orders/{order:order_number}', [OrderController::class, 'orderDetail'])->name('order.detail');
 
         Route::prefix('profile')->name('customer.profile.')->group(function () {
