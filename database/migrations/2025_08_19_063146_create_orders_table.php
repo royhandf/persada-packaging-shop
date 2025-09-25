@@ -17,22 +17,19 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
 
             $table->json('shipping_address');
-            $table->string('shipping_courier')->nullable(); // misal: "jne", "sicepat"
-            $table->string('shipping_service')->nullable(); // misal: "REG", "YES"
+            $table->string('shipping_courier')->nullable();
+            $table->string('shipping_service')->nullable();
             $table->string('shipping_tracking_number')->nullable();
 
-            // Informasi Keuangan
             $table->decimal('subtotal', 15, 2);
             $table->decimal('shipping_cost', 15, 2)->default(0);
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('grand_total', 15, 2);
 
-            // Informasi Pembayaran
             $table->string('payment_method')->nullable();
-            $table->string('payment_gateway_id')->nullable(); // ID dari Midtrans/Xendit
+            $table->string('payment_gateway_id')->nullable();
             $table->timestamp('paid_at')->nullable();
 
-            // Status
             $table->enum('status', [
                 'pending_payment',
                 'paid',
