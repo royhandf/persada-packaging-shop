@@ -62,37 +62,30 @@
                 </div>
             </div>
 
-            <div class="space-y-6">
+            <div class="space-y-8">
                 @forelse ($orders as $order)
-                    <div class="bg-white rounded-xl shadow-sm transition hover:shadow-lg overflow-hidden">
-                        <div class="p-6 flex flex-col md:flex-row gap-6">
-                            @if ($order->items->isNotEmpty())
-                                @php $firstItem = $order->items->first(); @endphp
-                                <img src="{{ optional(optional(optional($firstItem)->productVariant)->product)->primaryImage ? asset('storage/' . $firstItem->productVariant->product->primaryImage->image_path) : asset('images/default-product.png') }}"
-                                    alt="{{ $firstItem->product_name ?? 'Produk Dihapus' }}"
-                                    class="w-full h-48 md:w-40 md:h-40 object-cover rounded-lg flex-shrink-0">
-                            @endif
-
-                            <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <section class="bg-white rounded-2xl shadow-sm">
+                        <div class="p-4 bg-gray-50 rounded-t-2xl border-b border-gray-200">
+                            <dl class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 text-sm">
                                 <div>
-                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Nomor Pesanan</p>
-                                    <p class="font-bold text-persada-dark mt-1">#{{ $order->order_number }}</p>
+                                    <dt class="font-medium text-gray-500">Nomor Pesanan</dt>
+                                    <dd class="mt-1 font-semibold text-gray-900">#{{ $order->order_number }}</dd>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Tanggal</p>
-                                    <p class="font-semibold text-gray-700 mt-1">{{ $order->created_at->format('d M Y') }}
-                                    </p>
+                                    <dt class="font-medium text-gray-500">Tanggal</dt>
+                                    <dd class="mt-1 font-medium text-gray-900">{{ $order->created_at->format('d M Y') }}
+                                    </dd>
                                 </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total</p>
-                                    <p class="font-bold text-gray-900 mt-1">
-                                        Rp{{ number_format($order->grand_total, 0, ',', '.') }}</p>
+                                <div class="hidden sm:block">
+                                    <dt class="font-medium text-gray-500">Total</dt>
+                                    <dd class="mt-1 font-semibold text-gray-900">
+                                        Rp{{ number_format($order->grand_total, 0, ',', '.') }}</dd>
                                 </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Status</p>
-                                    <div class="mt-1">
+                                <div class="hidden sm:block">
+                                    <dt class="font-medium text-gray-500">Status</dt>
+                                    <dd class="mt-1">
                                         <span @class([
-                                            'px-3 py-1 text-xs font-bold rounded-full inline-flex items-center gap-1.5',
+                                            'px-2 py-0.5 text-xs font-bold rounded-full inline-flex items-center gap-1.5',
                                             'bg-yellow-100 text-yellow-800' => $order->status === 'pending_payment',
                                             'bg-green-100 text-green-800' => $order->status === 'paid',
                                             'bg-blue-100 text-blue-800' => $order->status === 'processing',
@@ -102,67 +95,52 @@
                                             'bg-red-100 text-red-800' => $order->status === 'cancelled',
                                             'bg-gray-100 text-gray-800' => $order->status === 'refunded',
                                         ])>
-                                            @switch($order->status)
-                                                @case('pending_payment')
-                                                    <x-heroicon-s-clock class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('paid')
-                                                    <x-heroicon-s-check-circle class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('processing')
-                                                    <x-heroicon-s-archive-box class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('shipped')
-                                                    <x-heroicon-s-truck class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('delivered')
-                                                    <x-heroicon-s-home-modern class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('completed')
-                                                    <x-heroicon-s-sparkles class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('cancelled')
-                                                    <x-heroicon-s-x-circle class="h-3.5 w-3.5" />
-                                                @break
-
-                                                @case('refunded')
-                                                    <x-heroicon-s-arrow-uturn-left class="h-3.5 w-3.5" />
-                                                @break
-                                            @endswitch
                                             {{ ucwords(str_replace('_', ' ', $order->status)) }}
                                         </span>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="p-6">
+                            @if ($order->items->isNotEmpty())
+                                @php $firstItem = $order->items->first(); @endphp
+                                <div class="flex items-start gap-6">
+                                    <img src="{{ optional(optional(optional($firstItem)->productVariant)->product)->primaryImage ? asset('storage/' . $firstItem->productVariant->product->primaryImage->image_path) : asset('images/default-product.png') }}"
+                                        alt="{{ $firstItem->product_name ?? 'Produk Dihapus' }}"
+                                        class="w-24 h-24 object-cover rounded-lg flex-shrink-0 bg-gray-100">
+                                    <div class="flex-grow">
+                                        <h4 class="font-bold text-lg text-gray-800">{{ $firstItem->product_name }}</h4>
+                                        <p class="text-sm text-gray-500">{{ $firstItem->variant_name }}</p>
+                                        @if ($order->items->count() > 1)
+                                            <p class="text-sm text-gray-500 mt-1 italic">+{{ $order->items->count() - 1 }}
+                                                produk lainnya</p>
+                                        @endif
+                                    </div>
+                                    <div class="flex flex-col items-end gap-4">
+                                        <a href="{{ route('order.detail', $order) }}"
+                                            class="bg-persada-primary text-white font-semibold py-2 px-5 rounded-lg text-sm transition hover:bg-persada-dark">
+                                            Lihat Detail
+                                        </a>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
-
-                        <div class="bg-gray-50 p-4 flex items-center justify-end">
-                            <a href="{{ route('order.detail', $order) }}"
-                                class="bg-persada-primary text-white font-semibold py-2 px-5 rounded-lg text-sm transition hover:bg-persada-dark">
-                                Lihat Detail Pesanan
-                            </a>
-                        </div>
+                    </section>
+                @empty
+                    <div class="text-center py-20 border-2 border-dashed rounded-xl bg-white">
+                        <x-heroicon-o-inbox class="mx-auto h-12 w-12 text-gray-400" />
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900">Tidak Ada Pesanan</h3>
+                        <p class="mt-1 text-sm text-gray-500">Anda belum memiliki pesanan dengan status ini.</p>
                     </div>
-                    @empty
-                        <div class="text-center py-20 border-2 border-dashed rounded-xl bg-white">
-                            <x-heroicon-o-inbox class="mx-auto h-12 w-12 text-gray-400" />
-                            <h3 class="mt-4 text-lg font-semibold text-gray-900">Tidak Ada Pesanan</h3>
-                            <p class="mt-1 text-sm text-gray-500">Anda belum memiliki pesanan dengan status ini.</p>
-                        </div>
-                    @endforelse
+                @endforelse
+            </div>
+
+            @if ($orders->hasPages())
+                <div class="mt-8">
+                    {{ $orders->links() }}
                 </div>
-
-                @if ($orders->hasPages())
-                    <div class="mt-8">
-                        {{ $orders->links() }}
-                    </div>
-                @endif
-            </main>
-        </div>
-    @endsection
+            @endif
+        </main>
+    </div>
+@endsection
