@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\OrderController;
@@ -94,6 +95,9 @@ Route::middleware(['auth'])->group(function () {
                     Route::post('images', [ProductImageController::class, 'store'])->name('images.store');
                     Route::delete('images/{image}', [ProductImageController::class, 'destroy'])->name('images.destroy');
                 });
+
+                Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+                Route::get('customers/details/{customer}', [CustomerController::class, 'getDetails'])->name('customers.details');
             });
         });
 
