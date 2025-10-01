@@ -36,8 +36,7 @@
             <span>Dashboard</span>
         </a>
 
-        {{-- [BARU & DIPINDAH KE ATAS] Menu Pesanan - Paling Penting! --}}
-        <a href="{{-- route('orders.index') --}}" {{-- Ganti dengan route pesanan Anda --}}
+        <a href="{{ route('dashboard.orders.index') }}"
             class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors {{ $isPesanan ? 'bg-green-100 text-green-700 shadow-sm dark:bg-green-900/50 dark:text-green-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
             <x-heroicon-o-shopping-bag class="h-5 w-5" />
             <span>Pesanan</span>

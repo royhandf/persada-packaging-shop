@@ -48,7 +48,7 @@ class OrderController extends Controller
             abort(404);
         }
 
-        $pdf = Pdf::loadView('pages.home.invoice', compact('order'));
+        $pdf = Pdf::loadView('pages.invoice', compact('order'));
 
         $fileName = 'invoice-' . $order->order_number . '.pdf';
 

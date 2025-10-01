@@ -18,8 +18,7 @@ use App\Http\Controllers\Dashboard\ProductImageController;
 use App\Http\Controllers\Dashboard\ProductVariantController;
 use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\SettingController;
-
-
+use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +80,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('profile', [ProfileController::class, 'index'])->name('profile');
             Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
             Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+            Route::get('orders', [DashboardOrderController::class, 'index'])->name('dashboard.orders.index');
+            Route::get('orders/{order:order_number}', [DashboardOrderController::class, 'show'])->name('dashboard.orders.show');
+            Route::post('orders/{order:order_number}/update-status', [DashboardOrderController::class, 'updateStatus'])->name('dashboard.orders.updateStatus');
+            Route::get('orders/{order:order_number}/invoice', [DashboardOrderController::class, 'invoice'])->name('dashboard.orders.invoice');
 
             // Grup Data Master
             Route::prefix('master')->name('master.')->group(function () {
