@@ -1,22 +1,31 @@
 <?php
 
-use App\Http\Controllers\AdminManagementController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductImageController;
-use App\Http\Controllers\ProductVariantController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SettingController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Dashboard\AdminManagementController;
+use App\Http\Controllers\Dashboard\CategoryController;
+use App\Http\Controllers\Dashboard\CustomerController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\ProductController;
+use App\Http\Controllers\Dashboard\ProductImageController;
+use App\Http\Controllers\Dashboard\ProductVariantController;
+use App\Http\Controllers\Dashboard\ProfileController;
+use App\Http\Controllers\Dashboard\SettingController;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', [AppController::class, 'index'])->name('home');
 Route::get('about', [AppController::class, 'about'])->name('about');
@@ -31,6 +40,7 @@ Route::post('/midtrans/notification', [MidtransController::class, 'webhook']);
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
+    // --- RUTE HANYA UNTUK CUSTOMER ---
     Route::middleware('role:customer')->group(function () {
         Route::get('products', [AppController::class, 'products'])->name('products.index');
         Route::get('products/{product}', [AppController::class, 'productDetail'])->name('products.detail');
@@ -62,24 +72,15 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // --- RUTE UNTUK DASHBOARD ---
     Route::prefix('dashboard')->group(function () {
 
-        // --- RUTE UNTUK ADMIN & SUPERADMIN ---
+        // --- Rute untuk Admin & Superadmin ---
         Route::middleware('role:admin,superadmin')->group(function () {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('profile', [ProfileController::class, 'index'])->name('profile');
             Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
             Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-
-            // [DIKEMBALIKAN] Grup Manajemen Toko
-            Route::prefix('penjualan')->name('penjualan.')->group(function () {
-                Route::get('/pesanan', function () {
-                    return 'Halaman Daftar Pesanan';
-                })->name('pesanan.index');
-                Route::get('/pembayaran', function () {
-                    return 'Halaman Log Pembayaran';
-                })->name('pembayaran.index');
-            });
 
             // Grup Data Master
             Route::prefix('master')->name('master.')->group(function () {
@@ -101,9 +102,9 @@ Route::middleware(['auth'])->group(function () {
             });
         });
 
-        // --- RUTE HANYA UNTUK SUPERADMIN ---
+        // --- Rute hanya untuk Superadmin ---
         Route::middleware('role:superadmin')->group(function () {
-            // [DIKEMBALIKAN] Grup Laporan
+            // Grup Laporan
             Route::prefix('laporan')->name('laporan.')->group(function () {
                 Route::get('/penjualan', function () {
                     return 'Halaman Laporan Penjualan';

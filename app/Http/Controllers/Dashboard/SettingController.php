@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Setting;
 use App\Services\BiteshipService;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class SettingController extends Controller
 {
