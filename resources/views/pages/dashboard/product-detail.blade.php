@@ -20,7 +20,7 @@
                         @if ($product->status === 'active')
                             <x-heroicon-s-check class="w-2 h-2 fill-green-500" />
                         @else
-                            <x-heroicon-s-x class="w-2 h-2 fill-gray-500" />
+                            <x-heroicon-s-x-mark class="w-2 h-2 fill-gray-500" />
                         @endif
                         {{ ucfirst($product->status) }}
                     </span>
