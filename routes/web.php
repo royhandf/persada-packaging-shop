@@ -19,6 +19,7 @@ use App\Http\Controllers\Dashboard\ProductVariantController;
 use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\SettingController;
 use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
+use App\Http\Controllers\Dashboard\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,6 @@ Route::post('/midtrans/notification', [MidtransController::class, 'webhook']);
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-    // --- RUTE HANYA UNTUK CUSTOMER ---
     Route::middleware('role:customer')->group(function () {
         Route::get('products', [AppController::class, 'products'])->name('products.index');
         Route::get('products/{product}', [AppController::class, 'productDetail'])->name('products.detail');
@@ -71,10 +71,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // --- RUTE UNTUK DASHBOARD ---
     Route::prefix('dashboard')->group(function () {
-
-        // --- Rute untuk Admin & Superadmin ---
         Route::middleware('role:admin,superadmin')->group(function () {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('profile', [ProfileController::class, 'index'])->name('profile');
@@ -86,7 +83,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('orders/{order:order_number}/update-status', [DashboardOrderController::class, 'updateStatus'])->name('dashboard.orders.updateStatus');
             Route::get('orders/{order:order_number}/invoice', [DashboardOrderController::class, 'invoice'])->name('dashboard.orders.invoice');
 
-            // Grup Data Master
             Route::prefix('master')->name('master.')->group(function () {
                 Route::resource('categories', CategoryController::class)->except(['create', 'edit', 'show']);
                 Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
@@ -106,16 +102,11 @@ Route::middleware(['auth'])->group(function () {
             });
         });
 
-        // --- Rute hanya untuk Superadmin ---
         Route::middleware('role:superadmin')->group(function () {
-            // Grup Laporan
-            Route::prefix('laporan')->name('laporan.')->group(function () {
-                Route::get('/penjualan', function () {
-                    return 'Halaman Laporan Penjualan';
-                })->name('penjualan.index');
-                Route::get('/pelanggan', function () {
-                    return 'Halaman Laporan Pelanggan';
-                })->name('pelanggan.index');
+            Route::prefix('reports')->name('reports.')->group(function () {
+                Route::get('/sales', [ReportController::class, 'sales'])->name('sales');
+                Route::get('/sales/export', [ReportController::class, 'exportSales'])->name('sales.export');
+                Route::get('/customers', [ReportController::class, 'customers'])->name('customers');
             });
 
             Route::resource('teams', AdminManagementController::class)->except(['create', 'edit', 'show']);

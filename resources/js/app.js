@@ -1,5 +1,6 @@
 import "./bootstrap";
 import { Notyf } from "notyf";
+import { Chart, registerables } from "chart.js";
 import Alpine from "alpinejs";
 import Swal from "sweetalert2";
 import intersect from "@alpinejs/intersect";
@@ -8,6 +9,7 @@ import L from "leaflet";
 import "trix";
 
 Alpine.plugin(intersect);
+Chart.register(...registerables);
 
 window.Alpine = Alpine;
 Alpine.start();
@@ -19,6 +21,7 @@ window.notyf = new Notyf({
     duration: 2500,
     position: { x: "right", y: "top" },
 });
+window.Chart = Chart;
 
 window.confirmDelete = function (form) {
     Swal.fire({
