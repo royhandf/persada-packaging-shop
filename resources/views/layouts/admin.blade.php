@@ -29,7 +29,7 @@
         profileDropdownOpen: false,
         manajemenTokoOpen: {{ request()->is('dashboard/penjualan*') ? 'true' : 'false' }},
         dataMasterOpen: {{ request()->is('dashboard/master*') ? 'true' : 'false' }},
-        laporanOpen: {{ request()->is('dashboard/laporan*') ? 'true' : 'false' }}
+        laporanOpen: {{ request()->is('dashboard/reports*') ? 'true' : 'false' }}
     }" class="flex h-screen overflow-hidden">
 
         @include('layouts.partials.sidebar')

@@ -12,24 +12,19 @@
     </div>
 
     <nav class="flex-grow space-y-1 p-4 overflow-y-auto scrollbar-hide">
-        {{-- Variabel untuk Cek Active State Halaman --}}
         @php
             $isDashboard = request()->routeIs('dashboard');
-            $isProfil = request()->routeIs('profile');
-            $isPesanan = request()->is('dashboard/orders*');
-            $isDataMaster = request()->is('dashboard/master/*');
-            $isLaporan = request()->is('dashboard/laporan/*');
-            $isManajemenAdmin = request()->is('dashboard/teams*');
-            $isPengaturan = request()->is('dashboard/settings*');
+            $isProfil = request()->routeIs('profile') || request()->routeIs('profile.*');
+            $isPesanan = request()->routeIs('dashboard.orders.*');
+            $isDataMaster = request()->routeIs('master.*');
+            $isLaporan = request()->routeIs('reports.*');
+            $isManajemenAdmin = request()->routeIs('teams.*');
+            $isPengaturan = request()->routeIs('settings.*');
         @endphp
 
-        {{-- =============================================== --}}
-        {{-- MENU UTAMA & OPERASIONAL --}}
-        {{-- =============================================== --}}
         <p class="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Menu
             Utama</p>
 
-        {{-- Dashboard --}}
         <a href="{{ route('dashboard') }}"
             class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors {{ $isDashboard ? 'bg-green-100 text-green-700 shadow-sm dark:bg-green-900/50 dark:text-green-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
             <x-heroicon-o-home class="h-5 w-5" />
@@ -42,7 +37,6 @@
             <span>Pesanan</span>
         </a>
 
-        {{-- Profil Akun --}}
         <a href="{{ route('profile') }}"
             class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors {{ $isProfil ? 'bg-green-100 text-green-700 shadow-sm dark:bg-green-900/50 dark:text-green-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
             <x-heroicon-o-user-circle class="h-5 w-5" />
@@ -78,20 +72,16 @@
                 <li>
                     <a href="{{ route('master.customers.index') }}"
                         class="block rounded-md px-4 py-2 text-sm font-medium transition-colors {{ request()->is('dashboard/master/customers*') ? 'text-green-700 font-semibold dark:text-green-400' : 'text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400' }}">
-                        Pelanggan
+                        Daftar Pelanggan
                     </a>
                 </li>
             </ul>
         </div>
 
-        {{-- =============================================== --}}
-        {{-- SUPER ADMIN --}}
-        {{-- =============================================== --}}
         @if (auth()->user()->role === 'superadmin')
             <p class="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
                 Super Admin</p>
 
-            {{-- Menu Laporan --}}
             <div class="rounded-lg {{ $isLaporan ? 'bg-green-50 dark:bg-green-900/30' : '' }}">
                 <button @click="laporanOpen = !laporanOpen"
                     class="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors {{ $isLaporan ? 'text-green-700 dark:text-green-400' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white' }}">
@@ -107,14 +97,14 @@
                     class="mt-2 ml-5 space-y-1 border-l-2 pl-4 {{ $isLaporan ? 'border-green-200 dark:border-green-800' : 'border-gray-200 dark:border-gray-700' }}"
                     x-cloak>
                     <li>
-                        <a href="{{ route('laporan.penjualan.index') }}"
-                            class="block rounded-md px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('laporan.penjualan.*') ? 'text-green-700 font-semibold dark:text-green-400' : 'text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400' }}">
+                        <a href="{{ route('reports.sales') }}"
+                            class="block rounded-md px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('reports.sales') ? 'text-green-700 font-semibold dark:text-green-400' : 'text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400' }}">
                             Penjualan
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('laporan.pelanggan.index') }}"
-                            class="block rounded-md px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('laporan.pelanggan.*') ? 'text-green-700 font-semibold dark:text-green-400' : 'text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400' }}">
+                        <a href="{{ route('reports.customers') }}"
+                            class="block rounded-md px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('reports.customers.*') ? 'text-green-700 font-semibold dark:text-green-400' : 'text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400' }}">
                             Pelanggan
                         </a>
                     </li>
