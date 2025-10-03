@@ -49,7 +49,25 @@ class OrderController extends Controller
             'status' => 'required|in:' . implode(',', $statuses),
         ]);
 
-        $order->update(['status' => $request->status]);
+        $newStatus = $request->status;
+        $oldStatus = $order->status;
+
+        if ($newStatus === 'cancelled' && $oldStatus === 'pending_payment') {
+            $order->status = $newStatus;
+            $order->save();
+
+            foreach ($order->items as $item) {
+                $variant = $item->productVariant;
+                if ($variant) {
+                    $variant->decrement('reserved_stock', $item->quantity);
+                }
+            }
+
+            $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+            Notification::send($admins, new OrderCancelledNotification($order));
+        } else {
+            $order->update(['status' => $newStatus]);
+        }
 
         return redirect()->route('dashboard.orders.show', $order->order_number)->with('success', 'Status pesanan berhasil diperbarui.');
     }

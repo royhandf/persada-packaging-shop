@@ -15,11 +15,86 @@
                     <span class="moon-icon hidden"><x-heroicon-o-moon class="h-6 w-6" /></span>
                 </button>
 
-                <button
-                    class="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600/50">
-                    <x-heroicon-o-bell class="h-6 w-6" />
-                    <span class="absolute -right-0 -top-0 h-2 w-2 rounded-full bg-red-500"></span>
-                </button>
+                {{-- Ganti bagian tombol notifikasi Anda dengan ini --}}
+
+                <div x-data="{ notificationOpen: false }" class="relative">
+                    {{-- Tombol Lonceng --}}
+                    <button @click="notificationOpen = !notificationOpen"
+                        class="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600/50">
+                        <x-heroicon-o-bell class="h-6 w-6" />
+                        {{-- Titik Merah Dinamis: Muncul hanya jika ada notifikasi belum dibaca --}}
+                        @if ($unreadNotifications->isNotEmpty())
+                            <span
+                                class="absolute -right-0.5 -top-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[9px] text-white">
+                                {{ $unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <div x-show="notificationOpen" @click.outside="notificationOpen = false" x-transition
+                        class="absolute right-0 z-10 mt-2 w-80 rounded-lg border border-gray-100 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800"
+                        x-cloak>
+                        <div class="p-2">
+                            <div
+                                class="flex items-center justify-between border-b border-gray-200 px-2 pb-2 dark:border-gray-700">
+                                <h3 class="font-semibold text-gray-800 dark:text-gray-200">Notifikasi</h3>
+                                @if ($unreadNotifications->isNotEmpty())
+                                    <a href="{{ route('notifications.markAllAsRead') }}"
+                                        class="text-xs font-medium text-blue-600 hover:underline dark:text-blue-500">
+                                        Tandai semua dibaca
+                                    </a>
+                                @endif
+                            </div>
+
+                            <div class="max-h-96 overflow-y-auto">
+                                @forelse ($unreadNotifications as $notification)
+                                    <a href="{{ route('notifications.read', $notification->id) }}"
+                                        class="block rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-700/50">
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 flex-shrink-0">
+                                                <span class="text-blue-500">
+                                                    <x-dynamic-component :component="$notification->data['icon'] ?? 'heroicon-o-bell'" class="h-5 w-5" />
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-700 dark:text-gray-300">
+                                                    {{ $notification->data['message'] }}</p>
+                                                <p class="text-xs text-gray-400">
+                                                    {{ $notification->created_at->diffForHumans() }}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @empty
+                                    @if ($readNotifications->isEmpty())
+                                        <div class="py-4 text-center">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Tidak ada notifikasi.
+                                            </p>
+                                        </div>
+                                    @endif
+                                @endforelse
+
+                                @foreach ($readNotifications as $notification)
+                                    <a href="{{ $notification->data['url'] ?? '#' }}"
+                                        class="block rounded-md bg-gray-50 p-2 opacity-70 dark:bg-gray-900/50">
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 flex-shrink-0">
+                                                <span class="text-gray-400">
+                                                    <x-dynamic-component :component="$notification->data['icon'] ?? 'heroicon-o-bell'" class="h-5 w-5" />
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ $notification->data['message'] }}</p>
+                                                <p class="text-xs text-gray-400">
+                                                    {{ $notification->created_at->diffForHumans() }}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="hidden h-7 w-px bg-gray-200 sm:block dark:bg-gray-700"></div>
 

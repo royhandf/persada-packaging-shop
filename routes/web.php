@@ -20,6 +20,7 @@ use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\SettingController;
 use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
 use App\Http\Controllers\Dashboard\ReportController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,9 @@ Route::post('/midtrans/notification', [MidtransController::class, 'webhook']);
 
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('notifications/read/{notification}', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::get('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
     Route::middleware('role:customer')->group(function () {
         Route::get('products', [AppController::class, 'products'])->name('products.index');

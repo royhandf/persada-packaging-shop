@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
+use App\Models\User;
+use App\Notifications\PaymentConfirmedNotification;
+use Illuminate\Support\Facades\Notification;
 
 class MidtransController extends Controller
 {
@@ -51,6 +54,15 @@ class MidtransController extends Controller
                             $order->paid_at = now();
                             $order->save();
 
+                            try {
+                                $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+                                if ($admins->isNotEmpty()) {
+                                    Notification::send($admins, new PaymentConfirmedNotification($order));
+                                }
+                            } catch (Exception $e) {
+                                Log::error('Gagal mengirim notifikasi pembayaran terkonfirmasi: ' . $e->getMessage());
+                            }
+
                             foreach ($order->items as $item) {
                                 $variant = ProductVariant::find($item->product_variant_id);
                                 if ($variant) {
@@ -65,6 +77,15 @@ class MidtransController extends Controller
                     if ($order->status == 'pending_payment') {
                         $order->status = 'cancelled';
                         $order->save();
+
+                        try {
+                            $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+                            if ($admins->isNotEmpty()) {
+                                Notification::send($admins, new OrderCancelledNotification($order));
+                            }
+                        } catch (Exception $e) {
+                            Log::error('Gagal mengirim notifikasi pembatalan pesanan: ' . $e->getMessage());
+                        }
 
                         foreach ($order->items as $item) {
                             $variant = ProductVariant::find($item->product_variant_id);

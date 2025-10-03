@@ -15,6 +15,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
+use App\Models\User;
+use App\Notifications\NewOrderNotification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class CheckoutController extends Controller
 {
@@ -168,6 +172,15 @@ class CheckoutController extends Controller
 
                 CartItem::whereIn('id', $cartItems->pluck('id'))->delete();
                 session()->forget('buy_now_cart_item_id');
+
+                try {
+                    $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+                    if ($admins->isNotEmpty()) {
+                        Notification::send($admins, new NewOrderNotification($order));
+                    }
+                } catch (Exception $e) {
+                    Log::error('Gagal mengirim notifikasi pesanan baru: ' . $e->getMessage());
+                }
 
                 return $order;
             });
