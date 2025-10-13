@@ -56,6 +56,15 @@
         </div>
     </form>
 
+    <div class="mt-4 text-center text-sm">
+        <p class="text-gray-600">
+            Belum punya akun?
+            <a href="{{ route('register') }}" class="font-medium text-green-600 hover:underline">
+                Daftar di sini
+            </a>
+        </p>
+    </div>
+
     <div class="mt-6">
         <div class="relative">
             <div class="absolute inset-0 flex items-center">

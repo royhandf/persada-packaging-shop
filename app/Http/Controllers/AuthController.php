@@ -51,13 +51,11 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $validated['password'] = bcrypt($validated['password']);
-
         $user = User::create($validated);
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('auth_success', 'Registrasi berhasil! Selamat datang.');
+        return redirect()->route('verification.notice');
     }
 
     public function showLinkRequestForm()

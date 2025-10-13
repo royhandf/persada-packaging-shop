@@ -20,17 +20,23 @@ class GoogleController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
+            $user = User::where('email', $googleUser->getEmail())->first();
 
-            $user = User::firstOrCreate(
-                ['email' => $googleUser->getEmail()],
-                [
+            if ($user) {
+                if (!$user->hasVerifiedEmail()) {
+                    $user->markEmailAsVerified();
+                }
+                Auth::login($user, true);
+            } else {
+                $newUser = User::create([
                     'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
                     'password' => bcrypt(Str::random(16)),
                     'role' => 'customer',
-                ]
-            );
-
-            Auth::login($user, true);
+                    'email_verified_at' => now(),
+                ]);
+                Auth::login($newUser, true);
+            }
 
             return view('auth.google_callback');
         } catch (Exception $e) {
