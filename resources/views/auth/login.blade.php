@@ -52,4 +52,61 @@
             </button>
         </div>
     </form>
+
+    <div class="mt-6">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="bg-white px-2 text-gray-500">atau</span>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="{{ route('google.login') }}" id="google-login-btn"
+                class="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 py-2.5 rounded-md hover:bg-gray-100 transition">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" alt="Google">
+                <span class="font-medium">Masuk dengan Google</span>
+            </a>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const googleLoginBtn = document.getElementById('google-login-btn');
+
+            if (googleLoginBtn) {
+                googleLoginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const url = this.href;
+                    const windowName = 'GoogleAuth';
+
+                    const windowWidth = 600;
+                    const windowHeight = 700;
+                    const left = (screen.width / 2) - (windowWidth / 2);
+                    const top = (screen.height / 2) - (windowHeight / 2);
+
+                    const authWindow = window.open(url, windowName,
+                        `width=${windowWidth},height=${windowHeight},top=${top},left=${left}`);
+
+                    window.addEventListener('message', function(event) {
+                        if (event.origin !== window.location.origin) {
+                            return;
+                        }
+
+                        if (event.data === 'google_login_success') {
+                            if (authWindow) {
+                                authWindow.close();
+                            }
+                            window.location.reload();
+                        }
+                    }, false);
+                });
+            }
+        });
+    </script>
+@endpush

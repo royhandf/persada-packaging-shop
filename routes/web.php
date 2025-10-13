@@ -20,6 +20,7 @@ use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\SettingController;
 use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
 use App\Http\Controllers\Dashboard\ReportController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\NotificationController;
 
 /*
@@ -31,10 +32,16 @@ use App\Http\Controllers\NotificationController;
 Route::get('/', [AppController::class, 'index'])->name('home');
 Route::get('about', [AppController::class, 'about'])->name('about');
 
-Route::get('login', [AuthController::class, 'loginIndex'])->name('login');
-Route::post('login', [AuthController::class, 'login']);
-Route::get('register', [AuthController::class, 'registerIndex'])->name('register');
-Route::post('register', [AuthController::class, 'register']);
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthController::class, 'loginIndex'])->name('login');
+    Route::post('login', [AuthController::class, 'login']);
+    Route::get('register', [AuthController::class, 'registerIndex'])->name('register');
+    Route::post('register', [AuthController::class, 'register']);
+
+    Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+});
+
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 Route::post('/midtrans/notification', [MidtransController::class, 'webhook']);
 

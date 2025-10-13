@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckRoleMiddleware;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Providers\ComposerServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => CheckRoleMiddleware::class
+            'role' => CheckRoleMiddleware::class,
+            'guest' => RedirectIfAuthenticated::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             'midtrans/*'
