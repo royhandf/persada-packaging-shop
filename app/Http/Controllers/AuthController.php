@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -57,6 +58,48 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->route('home')->with('auth_success', 'Registrasi berhasil! Selamat datang.');
+    }
+
+    public function showLinkRequestForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        return $status == Password::RESET_LINK_SENT
+            ? back()->with('auth_success', 'Link reset password telah dikirim ke email Anda!')
+            : back()->withErrors(['email' => 'Kami tidak dapat menemukan pengguna dengan alamat email tersebut.']);
+    }
+
+    public function showResetForm(Request $request, $token = null)
+    {
+        return view('auth.reset-password')->with(
+            ['token' => $token, 'email' => $request->email]
+        );
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $status = Password::reset($validated, function ($user, $password) {
+            $user->forceFill([
+                'password' => $password
+            ])->save();
+        });
+
+        return $status == Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('auth_success', 'Password Anda berhasil direset! Silakan login.')
+            : back()->withErrors(['email' => 'Gagal mereset password. Token mungkin tidak valid.']);
     }
 
     public function logout(Request $request)
