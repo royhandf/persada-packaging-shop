@@ -52,9 +52,11 @@ class AuthController extends Controller
 
         $validated['password'] = bcrypt($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
 
-        return redirect()->route('login')->with('auth_success', 'Registration successful!');
+        Auth::login($user);
+
+        return redirect()->route('home')->with('auth_success', 'Registrasi berhasil! Selamat datang.');
     }
 
     public function logout(Request $request)
