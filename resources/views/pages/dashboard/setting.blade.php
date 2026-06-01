@@ -209,8 +209,11 @@
 
                 select(item) {
                     this.query = item.name;
-                    this.selectedId = item.id;
-                    this.results = [];
+                    // Ekstrak kode pos dari nama area dan append IDZ+kodepos untuk Biteship Rates API
+                    const postalMatch = item.name.match(/\.\s*(\d{5})$/);
+                    const postalCode  = postalMatch ? postalMatch[1] : '';
+                    this.selectedId   = postalCode ? item.id + 'IDZ' + postalCode : item.id;
+                    this.results      = [];
                 }
             }));
         });

@@ -226,10 +226,13 @@
                 },
 
                 select(item) {
-                    this.selectedId = item.id;
+                    // Ekstrak kode pos dari nama area (format: "Kecamatan, Kota, Provinsi. 67139")
+                    const postalMatch = item.name.match(/\.\s*(\d{5})$/);
+                    const postalCode  = postalMatch ? postalMatch[1] : '';
+                    this.selectedId   = postalCode ? item.id + 'IDZ' + postalCode : item.id;
                     this.selectedName = item.name;
-                    this.query = item.name;
-                    this.results = [];
+                    this.query        = item.name;
+                    this.results      = [];
                 }
             }
         }

@@ -55,10 +55,11 @@
                         <h2 class="text-xl font-semibold mb-4 text-gray-800">2. Opsi Pengiriman</h2>
                         <div x-show="loading" class="text-center py-4 text-gray-500">Memuat opsi pengiriman...</div>
                         <div x-show="!loading && shippingRates.length > 0" x-cloak class="space-y-3">
-                            <template x-for="rate in shippingRates" :key="rate.courier_service_code">
+                            <template x-for="rate in shippingRates" :key="rate.courier_code + '_' + rate.courier_service_code">
                                 <label class="flex items-start space-x-4 border rounded-lg p-4 cursor-pointer transition"
                                     :class="{
                                         'border-persada-primary ring-2 ring-persada-primary': selectedCourier &&
+                                            selectedCourier.courier_code == rate.courier_code &&
                                             selectedCourier.courier_service_code == rate.courier_service_code
                                     }">
                                     <input type="radio" name="shipping_rate_radio" :value="JSON.stringify(rate)"
