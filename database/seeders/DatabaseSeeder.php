@@ -15,25 +15,31 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::create([
-            'name' => 'Royhan',
-            'email' => 'royhandaffa125@gmail.com',
-            'password' => 'superadmin',
-            'role' => 'superadmin'
-        ]);
+        User::firstOrCreate(
+            ['email' => 'royhandaffa125@gmail.com'],
+            [
+                'name' => 'Royhan',
+                'password' => 'superadmin',
+                'role' => 'superadmin'
+            ]
+        );
 
-        User::create([
-            'name' => 'Daffa',
-            'email' => 'daffaroyhan525@gmail.com',
-            'password' => 'boskubabi',
-            'role' => 'admin'
-        ]);
+        User::firstOrCreate(
+            ['email' => 'daffaroyhan525@gmail.com'],
+            [
+                'name' => 'Daffa',
+                'password' => 'boskubabi',
+                'role' => 'admin'
+            ]
+        );
 
-        User::create([
-            'name' => 'Superadmin',
-            'email' => 'boedakoding@gmail.com',
-            'password' => 'Boedakoding.persada',
-            'role' => 'superadmin'
-        ]);
+        User::firstOrCreate(
+            ['email' => 'boedakoding@gmail.com'],
+            [
+                'name' => 'Superadmin',
+                'password' => 'Boedakoding.persada',
+                'role' => 'superadmin'
+            ]
+        );
     }
 }
