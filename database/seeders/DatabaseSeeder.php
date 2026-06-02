@@ -28,5 +28,12 @@ class DatabaseSeeder extends Seeder
             'password' => 'boskubabi',
             'role' => 'admin'
         ]);
+
+        User::create([
+            'name' => 'Superadmin',
+            'email' => 'boedakoding@gmail.com',
+            'password' => 'Boedakoding.persada',
+            'role' => 'superadmin'
+        ]);
     }
 }
